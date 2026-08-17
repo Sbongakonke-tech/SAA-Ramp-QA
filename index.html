@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>SAA Ramp QA</title>
+  <meta name="theme-color" content="#071B35">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">
+      <img src="SAA Logo.png" class="brand-logo" alt="SAA">
+      <div class="brand-text">
+        <h1>SAA Ramp QA</h1>
+        <p>Quality Assurance · Ground Services</p>
+      </div>
+    </div>
+    <div class="gold-bar"></div>
+  </header>
+
+  <!-- HOME SCREEN -->
+  <div id="homeScreen" class="screen">
+    <div class="home-grid">
+      <button class="home-card arrival" onclick="openForm('arrival')">
+        <span class="home-icon">✈️</span>
+        <span class="home-label">QA Arrivals</span>
+      </button>
+      <button class="home-card departure" onclick="openForm('departure')">
+        <span class="home-icon">🛫</span>
+        <span class="home-label">QA Departures</span>
+      </button>
+      <button class="home-card turnaround" onclick="openForm('turnaround')">
+        <span class="home-icon">🔄</span>
+        <span class="home-label">Turnaround</span>
+      </button>
+      <button class="home-card history" onclick="openHistory()">
+        <span class="home-icon">📋</span>
+        <span class="home-label">Submitted Forms</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ARRIVALS FORM SCREEN -->
+  <div id="arrivalScreen" class="screen hidden">
+
+    <div class="form-header">
+      <button class="back-btn" onclick="goHome()">← Back</button>
+      <span class="form-title">QA Arrivals</span>
+      <button class="save-draft-btn" onclick="saveDraft()">Save Draft</button>
+    </div>
+
+    <div class="form-body">
+
+      <!-- SECTION 1: ARRIVAL -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('arrival')">
+          <span>Arrival</span>
+          <span class="chevron" id="chevron-arrival">▼</span>
+        </div>
+        <div class="section-body" id="body-arrival">
+          <div class="field"><label>Flight Number</label><input type="text" id="flightNumber" placeholder="SA404"></div>
+          <div class="field"><label>Date</label><input type="date" id="flightDate"></div>
+          <div class="field"><label>TRC Coordinator Name</label><input type="text" id="coordinatorName" placeholder="Name"></div>
+          <div class="field"><label>TRC at Parking Bay</label><input type="time" id="trcAtParkingBay"></div>
+          <div class="field"><label>Parking Bay</label><input type="text" id="parkingBay" placeholder="C1"></div>
+          <div class="field"><label>Bay Clear of FOD</label>
+            <select id="bayClearFod">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Safety Cones in Place</label>
+            <select id="safetyConesInPlace">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of Safety Cones</label><input type="number" id="numberOfCones" placeholder="0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: INBOUND FLIGHT DETAILS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('inbound')">
+          <span>Inbound Flight Details</span>
+          <span class="chevron" id="chevron-inbound">▼</span>
+        </div>
+        <div class="section-body" id="body-inbound">
+          <div class="field"><label>Aircraft Type</label>
+            <select id="aircraftType">
+              <option value="">Select</option>
+              <option>A319</option><option>A320</option><option>A330</option><option>B737</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Registration</label><input type="text" id="registration" placeholder="ZSSZM"></div>
+          <div class="field"><label>STA</label><input type="time" id="sta"></div>
+          <div class="field"><label>ETA</label><input type="time" id="eta"></div>
+          <div class="field"><label>ATA</label><input type="time" id="ata"></div>
+          <div class="field"><label>Chocked Time</label><input type="time" id="chockedTime"></div>
+          <div class="field"><label>Thumbs Up</label><input type="time" id="thumbsUp"></div>
+
+          <div class="checklist-label">Arrival Checklist</div>
+          <div class="checklist">
+            <label class="check-item"><input type="checkbox" id="check1"> Bay is clear of FOD/GSE/Contamination</label>
+            <label class="check-item"><input type="checkbox" id="check2"> Adequate chocks are available</label>
+            <label class="check-item"><input type="checkbox" id="check3"> Ground/fixed power ready for use</label>
+            <label class="check-item"><input type="checkbox" id="check4"> Aircraft chocked correctly</label>
+            <label class="check-item"><input type="checkbox" id="check5"> TRC to approach aircraft when safe</label>
+            <label class="check-item"><input type="checkbox" id="check6"> FDC to release brakes when safe</label>
+            <label class="check-item"><input type="checkbox" id="check7"> Check for visible A/C damage/leaks</label>
+          </div>
+
+          <div class="field"><label>Signature</label><input type="text" id="inboundSignature" placeholder="Full name"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: BAGGAGE -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('baggage')">
+          <span>Baggage</span>
+          <span class="chevron" id="chevron-baggage">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-baggage">
+          <div class="field"><label>Supervisor Name</label><input type="text" id="baggageSupervisor" placeholder="Name"></div>
+          <div class="field"><label>Radio Number</label><input type="text" id="radioNumber" placeholder="Radio #"></div>
+          <div class="field"><label>Staff on Bay</label><input type="time" id="staffOnBay"></div>
+          <div class="field"><label>Equipment on Bay</label><input type="time" id="equipmentOnBay"></div>
+          <div class="field"><label>Step/Chute Parked</label><input type="time" id="stepChuteParked"></div>
+          <div class="field"><label>GPU</label><input type="time" id="gpu"></div>
+          <div class="field"><label>Cargo Holds Open</label><input type="time" id="cargoHoldsOpen"></div>
+          <div class="field"><label>First Bag Off</label><input type="time" id="firstBagOff"></div>
+          <div class="field"><label>First Bag Sent</label><input type="time" id="firstBagSent"></div>
+          <div class="field"><label>Last Bag Off</label><input type="time" id="lastBagOff"></div>
+          <div class="field"><label>Last Bag Sent</label><input type="time" id="lastBagSent"></div>
+          <div class="field"><label>First Cargo Off</label><input type="time" id="firstCargoOff"></div>
+          <div class="field"><label>Last Cargo Off</label><input type="time" id="lastCargoOff"></div>
+          <div class="field"><label>Cargo Hold Inspection</label>
+            <select id="cargoHoldInspection">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Flight Supervisor Signature</label><input type="text" id="flightSupSignature" placeholder="Full name"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: BUSES -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('buses')">
+          <span>Buses</span>
+          <span class="chevron" id="chevron-buses">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-buses">
+          <div class="field"><label>Bus Number</label><input type="text" id="busNumber" placeholder="Bus #"></div>
+          <div class="field"><label>Bus Time</label><input type="time" id="busTime"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 5: INBOUND FLIGHT PASSENGERS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('passengers')">
+          <span>Inbound Flight Passengers</span>
+          <span class="chevron" id="chevron-passengers">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-passengers">
+          <div class="field"><label>Arrival Staff on Bay</label><input type="time" id="arrivalStaffOnBay"></div>
+          <div class="field"><label>First Passenger Off</label><input type="time" id="firstPassengerOff"></div>
+          <div class="field"><label>Last Passenger Off</label><input type="time" id="lastPassengerOff"></div>
+          <div class="field"><label>PAU Arrive</label><input type="time" id="pauArrive"></div>
+          <div class="field"><label>PAU Depart</label><input type="time" id="pauDepart"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 6: GROOMING -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('grooming')">
+          <span>Grooming</span>
+          <span class="chevron" id="chevron-grooming">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-grooming">
+          <div class="field"><label>Aircraft Clean Type</label>
+            <select id="aircraftCleanType">
+              <option value="">Select</option>
+              <option>Full Clean</option>
+              <option>Transit Clean</option>
+              <option>Quick Turn</option>
+            </select>
+          </div>
+          <div class="field"><label>Grooming On Aircraft</label><input type="time" id="groomingOn"></div>
+          <div class="field"><label>Grooming Off Aircraft</label><input type="time" id="groomingOff"></div>
+          <div class="field"><label>Potable Water</label>
+            <select id="potableWater">
+              <option value="">Select</option>
+              <option>Done</option><option>Not Required</option>
+            </select>
+          </div>
+          <div class="field"><label>Waste Services Done</label>
+            <select id="wasteServicesDone">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 7: AIRCHEFS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('airchefs')">
+          <span>Airchefs</span>
+          <span class="chevron" id="chevron-airchefs">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-airchefs">
+          <div class="field"><label>Start Offloading</label><input type="time" id="startOffloading"></div>
+          <div class="field"><label>Completed Offloading</label><input type="time" id="completedOffloading"></div>
+          <div class="field"><label>Bars Sealed</label>
+            <select id="barsSealed">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 8: ADDITIONAL INFORMATION -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('additional')">
+          <span>Additional Information</span>
+          <span class="chevron" id="chevron-additional">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-additional">
+          <div class="field"><label>General Comments</label><textarea id="commentsGeneral" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Passengers</label><textarea id="commentsPassengers" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Airchefs</label><textarea id="commentsAirchefs" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Grooming</label><textarea id="commentsGrooming" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Baggage</label><textarea id="commentsBaggage" rows="3" placeholder="Enter comments..."></textarea></div>
+        </div>
+      </div>
+
+      <!-- SUBMIT BUTTON -->
+      <div class="submit-wrap">
+        <button class="submit-btn" onclick="submitForm()">Submit Form</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
