@@ -7,8 +7,12 @@
   <meta name="theme-color" content="#071B35">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="stylesheet" href="style.css">
-</head>
+<link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="./favicon.png">
+<link rel="apple-touch-icon" sizes="192x192" href="./favicon-192.png">
+<link rel="shortcut icon" href="./favicon-32.png">
 <body>
+</head> 
 
   <!-- HEADER -->
   <header class="header">
@@ -247,7 +251,296 @@
 
     </div>
   </div>
+<!-- DEPARTURES FORM SCREEN -->
+<div id="departureScreen" class="screen hidden">
 
+    <div class="form-header">
+      <button class="back-btn" onclick="goHomeDeparture()">← Back</button>
+      <span class="form-title">QA Departures</span>
+      <button class="save-draft-btn" onclick="saveDepartureDraft()">Save Draft</button>
+    </div>
+
+    <div class="form-body">
+
+      <!-- SECTION 1: DEPARTURE -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-departure')">
+          <span>Departure</span>
+          <span class="chevron" id="chevron-dep-departure">▼</span>
+        </div>
+        <div class="section-body" id="body-dep-departure">
+          <div class="field"><label>Flight Number</label><input type="text" id="dep_flightNumber" placeholder="SA405"></div>
+          <div class="field"><label>Date</label><input type="date" id="dep_flightDate"></div>
+          <div class="field"><label>TRC Coordinator Name</label><input type="text" id="dep_coordinatorName" placeholder="Name"></div>
+          <div class="field"><label>TRC at Parking Bay</label><input type="time" id="dep_trcAtParkingBay"></div>
+          <div class="field"><label>Parking Bay</label><input type="text" id="dep_parkingBay" placeholder="C1"></div>
+          <div class="field"><label>Bay Clear of FOD</label>
+            <select id="dep_bayClearFod">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Safety Cones in Place</label>
+            <select id="dep_safetyConesInPlace">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of Safety Cones</label><input type="number" id="dep_numberOfCones" placeholder="0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: DEPARTURE FLIGHT DETAILS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-flightdetails')">
+          <span>Departure Flight Details</span>
+          <span class="chevron" id="chevron-dep-flightdetails">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-flightdetails">
+          <div class="field"><label>Aircraft Type</label>
+            <select id="dep_aircraftType">
+              <option value="">Select</option>
+              <option>A319</option><option>A320</option><option>A330</option><option>B737</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>A/C Registration</label><input type="text" id="dep_registration" placeholder="ZSSZM"></div>
+          <div class="field"><label>STD</label><input type="time" id="dep_std"></div>
+          <div class="field"><label>Flight Deck Arrive Onboard</label><input type="time" id="dep_flightDeckArrive"></div>
+          <div class="field"><label>Captain's Name</label><input type="text" id="dep_captainsName" placeholder="Name"></div>
+          <div class="field"><label>Cabin Crew Arrive Onboard</label><input type="time" id="dep_cabinCrewArrive"></div>
+          <div class="field"><label>Purser's Name</label><input type="text" id="dep_pursersName" placeholder="Name"></div>
+          <div class="field"><label>Expected Pax Totals J/C</label><input type="number" id="dep_expectedPaxJC" placeholder="0"></div>
+          <div class="field"><label>Expected Pax Totals Y/C</label><input type="number" id="dep_expectedPaxYC" placeholder="0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: FUELLING -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-fuelling')">
+          <span>Fuelling</span>
+          <span class="chevron" id="chevron-dep-fuelling">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-fuelling">
+          <div class="field"><label>Fuel Bowser on Bay</label><input type="time" id="dep_fuelBowserOnBay"></div>
+          <div class="field"><label>Fuelling Completed</label><input type="time" id="dep_fuellingCompleted"></div>
+          <div class="field"><label>RTOW</label><input type="text" id="dep_rtow" placeholder="kg"></div>
+          <div class="field"><label>Block Fuel</label><input type="text" id="dep_blockFuel" placeholder="kg"></div>
+          <div class="field"><label>Trip Fuel</label><input type="text" id="dep_tripFuel" placeholder="kg"></div>
+          <div class="field"><label>Taxi Fuel</label><input type="text" id="dep_taxiFuel" placeholder="kg"></div>
+          <div class="field"><label>Fuel Cap Closed</label>
+            <select id="dep_fuelCapClosed">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: BAGGAGE -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-baggage')">
+          <span>Baggage</span>
+          <span class="chevron" id="chevron-dep-baggage">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-baggage">
+          <div class="field"><label>Supervisor Name</label><input type="text" id="dep_baggageSupervisor" placeholder="Name"></div>
+          <div class="field"><label>Radio Number</label><input type="text" id="dep_radioNumber" placeholder="Radio #"></div>
+          <div class="field"><label>Staff on Bay</label><input type="time" id="dep_staffOnBay"></div>
+          <div class="field"><label>Equipment on Bay</label><input type="time" id="dep_equipmentOnBay"></div>
+          <div class="field"><label>Step/Chute Parked</label><input type="time" id="dep_stepChuteParked"></div>
+          <div class="field"><label>GPU</label><input type="time" id="dep_gpu"></div>
+          <div class="field"><label>Cargo on Bay</label><input type="time" id="dep_cargoOnBay"></div>
+          <div class="field"><label>Final Baggage on Bay</label><input type="time" id="dep_finalBaggageOnBay"></div>
+          <div class="field"><label>BRS Manifest</label><input type="text" id="dep_brsManifest" placeholder="Manifest #"></div>
+          <div class="field"><label>Baggage Expected</label><input type="number" id="dep_baggageExpected" placeholder="0"></div>
+          <div class="field"><label>Final Baggage Received</label><input type="number" id="dep_finalBaggageReceived" placeholder="0"></div>
+          <div class="field"><label>Hand Baggage Removed</label>
+            <select id="dep_handBaggageRemoved">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of Bags Offloaded</label><input type="number" id="dep_bagsOffloaded" placeholder="0"></div>
+          <div class="field"><label>Total Baggage Loaded</label><input type="number" id="dep_totalBaggageLoaded" placeholder="0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 5: GROOMING -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-grooming')">
+          <span>Grooming</span>
+          <span class="chevron" id="chevron-dep-grooming">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-grooming">
+          <div class="field"><label>A/C Clean Type</label>
+            <select id="dep_acCleanType">
+              <option value="">Select</option>
+              <option>Surface</option><option>Turnaround</option><option>Dress Clean</option>
+              <option>Deep Clean</option><option>Nightstop</option><option>Check Clean</option>
+            </select>
+          </div>
+          <div class="field"><label>Grooming On A/C</label><input type="time" id="dep_groomingOn"></div>
+          <div class="field"><label>Grooming Off A/C</label><input type="time" id="dep_groomingOff"></div>
+          <div class="field"><label>Customs Bin Loaded</label>
+            <select id="dep_customsBinLoaded">
+              <option value="">Select</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of Spray Cleans Loaded</label><input type="number" id="dep_sprayCleans" placeholder="0"></div>
+          <div class="field"><label>Immigration Forms</label>
+            <select id="dep_immigrationForms">
+              <option value="">Select</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of Duvets Loaded J/C</label><input type="number" id="dep_duvetsJC" placeholder="0"></div>
+          <div class="field"><label>Number of Duvets Loaded Crew Rest</label><input type="number" id="dep_duvetsCrewRest" placeholder="0"></div>
+          <div class="field"><label>Headsets Loaded</label>
+            <select id="dep_headsetsLoaded">
+              <option value="">Select</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Return Headsets</label><input type="number" id="dep_returnHeadsets" placeholder="0"></div>
+          <div class="field"><label>Return Cabin Dressing Bags Loaded</label><input type="number" id="dep_returnCabinDressingBags" placeholder="0"></div>
+          <div class="field"><label>Potable Water</label>
+            <select id="dep_potableWater">
+              <option value="">Select</option><option>Done</option><option>Not Required</option>
+            </select>
+          </div>
+          <div class="field"><label>Waste Services Done</label>
+            <select id="dep_wasteServicesDone">
+              <option value="">Select</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Amenity Bags Loaded J/C</label><input type="number" id="dep_amenityBagsJC" placeholder="0"></div>
+          <div class="field"><label>Amenity Bags Loaded Y/C</label><input type="number" id="dep_amenityBagsYC" placeholder="0"></div>
+          <div class="field"><label>Return Amenity Bags J/C</label><input type="number" id="dep_returnAmenityJC" placeholder="0"></div>
+          <div class="field"><label>Return Amenity Bags Y/C</label><input type="number" id="dep_returnAmenityYC" placeholder="0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 6: BOARDING -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-boarding')">
+          <span>Boarding</span>
+          <span class="chevron" id="chevron-dep-boarding">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-boarding">
+          <div class="field"><label>OK to Board</label><input type="time" id="dep_okToBoard"></div>
+          <div class="field"><label>Hand Luggage Staff</label>
+            <select id="dep_handLuggageStaff">
+              <option value="">Select</option><option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>First Passenger Boarded</label><input type="time" id="dep_firstPassengerBoarded"></div>
+          <div class="field"><label>Last Passenger Boarded</label><input type="time" id="dep_lastPassengerBoarded"></div>
+          <div class="field"><label>Final Slip Received</label><input type="time" id="dep_finalSlipReceived"></div>
+          <div class="field"><label>PAU on Bay</label><input type="time" id="dep_pauOnBay"></div>
+          <div class="field"><label>PAU Leave Bay</label><input type="time" id="dep_pauLeaveBay"></div>
+          <div class="checklist-label">Passenger Figures</div>
+          <div class="field"><label>Final Passenger Totals J/C</label><input type="number" id="dep_finalPaxJC" placeholder="0"></div>
+          <div class="field"><label>Final Passenger Totals Y/C</label><input type="number" id="dep_finalPaxYC" placeholder="0"></div>
+          <div class="field"><label>Total Infants</label><input type="number" id="dep_totalInfants" placeholder="0"></div>
+          <div class="field"><label>Final Passenger Totals</label><input type="number" id="dep_finalPaxTotals" placeholder="0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 7: AIRCHEFS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-airchefs')">
+          <span>Airchefs</span>
+          <span class="chevron" id="chevron-dep-airchefs">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-airchefs">
+          <div class="field"><label>Start Loading</label><input type="time" id="dep_startLoading"></div>
+          <div class="field"><label>Complete Loading</label><input type="time" id="dep_completeLoading"></div>
+          <div class="field"><label>A/C Configuration J/C</label><input type="number" id="dep_acConfigJC" placeholder="0"></div>
+          <div class="field"><label>A/C Configuration Y/C</label><input type="number" id="dep_acConfigYC" placeholder="0"></div>
+          <div class="field"><label>Passenger Booked J/C</label><input type="number" id="dep_paxBookedJC" placeholder="0"></div>
+          <div class="field"><label>Passenger Booked Y/C</label><input type="number" id="dep_paxBookedYC" placeholder="0"></div>
+          <div class="field"><label>Meals Loaded J/C</label><input type="number" id="dep_mealsJC" placeholder="0"></div>
+          <div class="field"><label>Special Meals J/C</label><input type="number" id="dep_specialMealsJC" placeholder="0"></div>
+          <div class="field"><label>Total Meals J/C</label><input type="number" id="dep_totalMealsJC" placeholder="0"></div>
+          <div class="field"><label>Meals Loaded Y/C</label><input type="number" id="dep_mealsYC" placeholder="0"></div>
+          <div class="field"><label>Special Meals Y/C</label><input type="number" id="dep_specialMealsYC" placeholder="0"></div>
+          <div class="field"><label>Total Meals Y/C</label><input type="number" id="dep_totalMealsYC" placeholder="0"></div>
+          <div class="field"><label>Return Meals J/C</label><input type="number" id="dep_returnMealsJC" placeholder="0"></div>
+          <div class="field"><label>Return Meals Y/C</label><input type="number" id="dep_returnMealsYC" placeholder="0"></div>
+          <div class="field"><label>Airchefs Sign Off</label><input type="time" id="dep_airchefsSignoff"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 8: SECURITY CHECK -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-security')">
+          <span>Security Check</span>
+          <span class="chevron" id="chevron-dep-security">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-security">
+          <div class="field"><label>Security Check Started</label><input type="time" id="dep_securityStarted"></div>
+          <div class="field"><label>Security Check Stopped</label><input type="time" id="dep_securityStopped"></div>
+          <div class="field"><label>Security Check Found</label><input type="text" id="dep_securityFound" placeholder="Details if anything found"></div>
+          <div class="checklist-label">Bag Tags</div>
+          <div class="bag-tags-wrap" id="bagTagsWrap">
+            <div class="bag-tag-row">
+              <div class="bag-tag-inputs">
+                <div class="field"><label>No. Tags</label><input type="number" class="tag-count" placeholder="0"></div>
+                <div class="field"><label>Container</label><input type="text" class="tag-container" placeholder="Container"></div>
+              </div>
+            </div>
+          </div>
+          <button class="add-tag-btn" onclick="addBagTagRow()">+ Add Bag Tag Row</button>
+        </div>
+      </div>
+
+      <!-- SECTION 9: DEPARTURE CHECKS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-checks')">
+          <span>Departure Checks</span>
+          <span class="chevron" id="chevron-dep-checks">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-checks">
+          <div class="field"><label>TUG on Bay</label><input type="time" id="dep_tugOnBay"></div>
+          <div class="field"><label>Holds Closed</label><input type="time" id="dep_holdsClosed"></div>
+          <div class="field"><label>Doors Closed</label><input type="time" id="dep_doorsClosed"></div>
+          <div class="field"><label>Stairs Removed</label><input type="time" id="dep_stairsRemoved"></div>
+          <div class="field"><label>ATD</label><input type="time" id="dep_atd"></div>
+          <div class="checklist-label">Departure Checklist</div>
+          <div class="checklist">
+            <label class="check-item"><input type="checkbox" id="dep_check1"> GSE is moved from the A/C</label>
+            <label class="check-item"><input type="checkbox" id="dep_check2"> GSE parked at the restricted area</label>
+            <label class="check-item"><input type="checkbox" id="dep_check3"> Towbar/tug connected correctly</label>
+            <label class="check-item"><input type="checkbox" id="dep_check4"> Protection covers/plugs removed</label>
+            <label class="check-item"><input type="checkbox" id="dep_check5"> Intakes/vents/exhaust clear from FOD</label>
+            <label class="check-item"><input type="checkbox" id="dep_check6"> All panels/doors closed and secured</label>
+            <label class="check-item"><input type="checkbox" id="dep_check7"> Check for visible A/C damage/leaks</label>
+          </div>
+          <div class="field"><label>Signature</label><input type="text" id="dep_signature" placeholder="Full name"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 10: ADDITIONAL INFORMATION -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('dep-additional')">
+          <span>Additional Information</span>
+          <span class="chevron" id="chevron-dep-additional">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-dep-additional">
+          <div class="field"><label>General Comments</label><textarea id="dep_commentsGeneral" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Passengers</label><textarea id="dep_commentsPassengers" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Airchefs</label><textarea id="dep_commentsAirchefs" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Grooming</label><textarea id="dep_commentsGrooming" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Baggage</label><textarea id="dep_commentsBaggage" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Delay Comments / Reasons</label><textarea id="dep_delayComments" rows="3" placeholder="Enter delay details..."></textarea></div>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="submit-wrap">
+        <button class="submit-btn" onclick="submitDepartureForm()">Submit Form</button>
+      </div>
+
+    </div>
+</div>
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
