@@ -20,9 +20,11 @@ function openForm(type) {
   } else if (type === 'turnaround') {
     document.getElementById('turnaroundScreen').classList.remove('hidden');
   }
-} 
+  showToolbar(type);
+}
 
 function goHome() {
+   hideToolbar();
   document.getElementById('arrivalScreen').classList.add('hidden');
   document.getElementById('homeScreen').classList.remove('hidden');
 }
@@ -208,6 +210,7 @@ function openDepartureForm() {
 }
 
 function goHomeDeparture() {
+   hideToolbar();
   document.getElementById('departureScreen').classList.add('hidden');
   document.getElementById('homeScreen').classList.remove('hidden');
 }
@@ -426,6 +429,7 @@ document.getElementById('dep_flightDate').value = new Date().toISOString().split
 // ── TURNAROUND FORM ───────────────────────────────────
 
 function goHomeTurnaround() {
+   hideToolbar();
   document.getElementById('turnaroundScreen').classList.add('hidden');
   document.getElementById('homeScreen').classList.remove('hidden');
 }
@@ -800,3 +804,196 @@ function renderRecentSubmissions(submissions) {
 updateClock();
 setInterval(updateClock, 1000);
 loadTodayStats();
+// ── BOTTOM TOOLBAR ────────────────────────────────────
+
+let currentFormType = null;
+
+function showToolbar(formType) {
+  currentFormType = formType;
+  document.getElementById('bottomToolbar').classList.remove('hidden');
+}
+
+function hideToolbar() {
+  currentFormType = null;
+  document.getElementById('bottomToolbar').classList.add('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+// ── PHOTO ─────────────────────────────────────────────
+function toolbarPhoto() {
+  document.getElementById('toolbarPhotoInput').click();
+}
+
+function handleToolbarPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    showToast('📷 Photo attached successfully');
+    // Store photo in session
+    if (!window.attachedPhotos) window.attachedPhotos = [];
+    window.attachedPhotos.push({
+      name: file.name,
+      data: e.target.result,
+      form: currentFormType,
+      time: new Date().toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── LOCATION ──────────────────────────────────────────
+function toolbarLocation() {
+  document.getElementById('locationModal').classList.remove('hidden');
+  document.getElementById('locationContent').innerHTML = 'Getting location...';
+
+  if (!navigator.geolocation) {
+    document.getElementById('locationContent').innerHTML = 'Geolocation not supported on this device.';
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lon = pos.coords.longitude.toFixed(6);
+      const acc = Math.round(pos.coords.accuracy);
+      document.getElementById('locationContent').innerHTML = `
+        <div style="margin-bottom:16px;">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:4px;">Latitude</p>
+          <p style="font-size:18px;font-weight:900;color:var(--blue);">${lat}</p>
+        </div>
+        <div style="margin-bottom:16px;">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:4px;">Longitude</p>
+          <p style="font-size:18px;font-weight:900;color:var(--blue);">${lon}</p>
+        </div>
+        <div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:4px;">Accuracy</p>
+          <p style="font-size:14px;font-weight:700;color:var(--green);">± ${acc} metres</p>
+        </div>
+        <button onclick="copyLocation('${lat}','${lon}')" style="width:100%;margin-top:16px;background:var(--blue);color:white;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Segoe UI',Arial,sans-serif;">
+          Copy coordinates
+        </button>
+      `;
+    },
+    err => {
+      document.getElementById('locationContent').innerHTML = `
+        <p style="color:var(--red);font-weight:700;">Could not get location.</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px;">Make sure location permission is enabled for this site.</p>
+      `;
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function copyLocation(lat, lon) {
+  const text = `${lat}, ${lon}`;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('📍 Coordinates copied');
+    closeModal('locationModal');
+  });
+}
+
+// ── JUMP TO SECTION ───────────────────────────────────
+function toolbarJump() {
+  const sections = getCurrentFormSections();
+  const list = document.getElementById('jumpList');
+
+  list.innerHTML = sections.map(s => `
+    <div class="jump-item" onclick="jumpToSection('${s.id}')">
+      <div class="jump-dot ${s.hasContent ? 'complete' : 'empty'}"></div>
+      <span class="jump-name">${s.label}</span>
+      <span class="jump-arrow">›</span>
+    </div>
+  `).join('');
+
+  document.getElementById('jumpModal').classList.remove('hidden');
+}
+
+function jumpToSection(sectionId) {
+  closeModal('jumpModal');
+
+  // Open the section if collapsed
+  const body = document.getElementById('body-' + sectionId);
+  const chevron = document.getElementById('chevron-' + sectionId);
+  if (body && body.classList.contains('hidden')) {
+    body.classList.remove('hidden');
+    if (chevron) chevron.classList.add('open');
+  }
+
+  // Scroll to section
+  setTimeout(() => {
+    const header = document.querySelector(`[onclick="toggleSection('${sectionId}')"]`);
+    if (header) {
+      header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
+}
+
+// ── PROGRESS ──────────────────────────────────────────
+function toolbarProgress() {
+  const sections = getCurrentFormSections();
+  const list = document.getElementById('progressList');
+  const complete = sections.filter(s => s.hasContent).length;
+
+  list.innerHTML = `
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:36px;font-weight:900;color:var(--blue);">${complete}/${sections.length}</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700;">sections started</div>
+    </div>
+    ${sections.map(s => `
+      <div class="progress-item">
+        <span class="progress-name">${s.label}</span>
+        <span class="progress-badge ${s.hasContent ? 'complete' : 'incomplete'}">
+          ${s.hasContent ? '✓ Started' : 'Empty'}
+        </span>
+      </div>
+    `).join('')}
+  `;
+
+  document.getElementById('progressModal').classList.remove('hidden');
+}
+
+// ── GET CURRENT FORM SECTIONS ─────────────────────────
+function getCurrentFormSections() {
+  const sectionMap = {
+    arrival: [
+      { id: 'arrival', label: 'Arrival', field: 'flightNumber' },
+      { id: 'inbound', label: 'Inbound Flight Details', field: 'aircraftType' },
+      { id: 'baggage', label: 'Baggage', field: 'baggageSupervisor' },
+      { id: 'buses', label: 'Buses', field: 'busNumber' },
+      { id: 'passengers', label: 'Inbound Flight Passengers', field: 'arrivalStaffOnBay' },
+      { id: 'grooming', label: 'Grooming', field: 'groomingOn' },
+      { id: 'airchefs', label: 'Airchefs', field: 'startOffloading' },
+      { id: 'additional', label: 'Additional Information', field: 'commentsGeneral' },
+    ],
+    departure: [
+      { id: 'dep-departure', label: 'Departure', field: 'dep_flightNumber' },
+      { id: 'dep-flightdetails', label: 'Departure Flight Details', field: 'dep_aircraftType' },
+      { id: 'dep-fuelling', label: 'Fuelling', field: 'dep_fuelBowserOnBay' },
+      { id: 'dep-baggage', label: 'Baggage', field: 'dep_baggageSupervisor' },
+      { id: 'dep-grooming', label: 'Grooming', field: 'dep_groomingOn' },
+      { id: 'dep-boarding', label: 'Boarding', field: 'dep_okToBoard' },
+      { id: 'dep-airchefs', label: 'Airchefs', field: 'dep_startLoading' },
+      { id: 'dep-security', label: 'Security Check', field: 'dep_securityStarted' },
+      { id: 'dep-checks', label: 'Departure Checks', field: 'dep_tugOnBay' },
+      { id: 'dep-additional', label: 'Additional Information', field: 'dep_commentsGeneral' },
+    ],
+    turnaround: [
+      { id: 'ta-header', label: 'Turnaround', field: 'ta_flightNumber' },
+      { id: 'ta-flightdetails', label: 'Arrival Flight Details', field: 'ta_aircraftType' },
+      { id: 'ta-baggage', label: 'Arrival Baggage', field: 'ta_baggageSupervisor' },
+      { id: 'ta-buses', label: 'Buses', field: null },
+      { id: 'ta-passengers', label: 'Arrival Flight Passengers', field: 'ta_arrivalStaffOnBay' },
+      { id: 'ta-additional', label: 'Additional Information', field: 'ta_commentsGeneral' },
+    ]
+  };
+
+  const sections = sectionMap[currentFormType] || [];
+  return sections.map(s => ({
+    ...s,
+    hasContent: s.field ? (document.getElementById(s.field)?.value || '') !== '' : false
+  }));
+}

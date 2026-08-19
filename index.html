@@ -764,6 +764,59 @@
   <div id="historyList" class="history-list hidden"></div>
 
 </div>
+
+<!-- BOTTOM TOOLBAR -->
+<div class="bottom-toolbar hidden" id="bottomToolbar">
+  <button class="toolbar-btn" onclick="toolbarPhoto()">
+    <span class="toolbar-icon">📷</span>
+    <span class="toolbar-label">Photo</span>
+  </button>
+  <button class="toolbar-btn" onclick="toolbarLocation()">
+    <span class="toolbar-icon">📍</span>
+    <span class="toolbar-label">Location</span>
+  </button>
+  <button class="toolbar-btn" onclick="toolbarJump()">
+    <span class="toolbar-icon">☰</span>
+    <span class="toolbar-label">Jump to</span>
+  </button>
+  <button class="toolbar-btn" onclick="toolbarProgress()">
+    <span class="toolbar-icon">📊</span>
+    <span class="toolbar-label">Progress</span>
+  </button>
+</div>
+
+<!-- PHOTO INPUT -->
+<input type="file" id="toolbarPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="handleToolbarPhoto(this)">
+
+<!-- JUMP TO MODAL -->
+<div class="modal hidden" id="jumpModal">
+  <div class="modal-overlay" onclick="closeModal('jumpModal')"></div>
+  <div class="modal-card">
+    <div class="modal-title">Jump to section</div>
+    <div id="jumpList"></div>
+    <button class="modal-close" onclick="closeModal('jumpModal')">Close</button>
+  </div>
+</div>
+
+<!-- PROGRESS MODAL -->
+<div class="modal hidden" id="progressModal">
+  <div class="modal-overlay" onclick="closeModal('progressModal')"></div>
+  <div class="modal-card">
+    <div class="modal-title">Form progress</div>
+    <div id="progressList"></div>
+    <button class="modal-close" onclick="closeModal('progressModal')">Close</button>
+  </div>
+</div>
+
+<!-- LOCATION MODAL -->
+<div class="modal hidden" id="locationModal">
+  <div class="modal-overlay" onclick="closeModal('locationModal')"></div>
+  <div class="modal-card">
+    <div class="modal-title">📍 Current Location</div>
+    <div id="locationContent" style="padding:16px 0;text-align:center;color:var(--muted);font-size:14px;">Getting location...</div>
+    <button class="modal-close" onclick="closeModal('locationModal')">Close</button>
+  </div>
+</div>
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
