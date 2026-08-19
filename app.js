@@ -28,7 +28,9 @@ function goHome() {
 }
 
 function openHistory() {
-  showToast('Submitted forms coming soon');
+  document.getElementById('homeScreen').classList.add('hidden');
+  document.getElementById('historyScreen').classList.remove('hidden');
+  loadHistory();
 }
 
 // ── SECTION TOGGLE ────────────────────────────────────
@@ -578,3 +580,131 @@ async function submitTurnaroundForm() {
 
 // Set today's date for turnaround form
 document.getElementById('ta_flightDate').value = new Date().toISOString().split('T')[0];
+// ── HISTORY SCREEN ────────────────────────────────────
+
+let allSubmissions = [];
+let currentFilter = 'all';
+
+function goHomeHistory() {
+  document.getElementById('historyScreen').classList.add('hidden');
+  document.getElementById('homeScreen').classList.remove('hidden');
+}
+
+function filterHistory(type) {
+  currentFilter = type;
+
+  // Update active tab
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('tab-' + type).classList.add('active');
+
+  // Filter and render
+  const filtered = type === 'all' ? allSubmissions :
+    allSubmissions.filter(s => s.type === type);
+
+  renderHistory(filtered);
+}
+
+function renderHistory(submissions) {
+  const list = document.getElementById('historyList');
+  const empty = document.getElementById('historyEmpty');
+
+  if (submissions.length === 0) {
+    list.classList.add('hidden');
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  empty.classList.add('hidden');
+  list.classList.remove('hidden');
+
+  list.innerHTML = submissions.map(s => {
+    const typeLabel = s.type === 'arrivals' ? 'Arrival' :
+                      s.type === 'departures' ? 'Departure' : 'Turnaround';
+    const typeClass = s.type === 'arrivals' ? 'type-arrival' :
+                      s.type === 'departures' ? 'type-departure' : 'type-turnaround';
+    const date = new Date(s.created_at).toLocaleDateString('en-ZA', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+    const time = new Date(s.created_at).toLocaleTimeString('en-ZA', {
+      hour: '2-digit', minute: '2-digit'
+    });
+
+    return `
+      <div class="history-card">
+        <div class="history-card-top">
+          <span class="history-flight">${s.flight_number || s.arrival_flight_number || '—'}</span>
+          <span class="history-type ${typeClass}">${typeLabel}</span>
+        </div>
+        <div class="history-card-meta">
+          <div class="history-meta-item">
+            Bay
+            <span>${s.parking_bay || '—'}</span>
+          </div>
+          <div class="history-meta-item">
+            Coordinator
+            <span>${s.coordinator_name || '—'}</span>
+          </div>
+          <div class="history-meta-item">
+            Aircraft
+            <span>${s.aircraft_type || '—'} ${s.registration || ''}</span>
+          </div>
+          <div class="history-meta-item">
+            Date
+            <span>${s.flight_date || '—'}</span>
+          </div>
+        </div>
+        <div class="history-card-bottom">
+          <span class="history-submitted">Submitted ${date} at ${time}</span>
+          <span class="history-status">${s.form_status || 'Submitted'}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function loadHistory() {
+  const loading = document.getElementById('historyLoading');
+  const list = document.getElementById('historyList');
+  const empty = document.getElementById('historyEmpty');
+
+  loading.classList.remove('hidden');
+  list.classList.add('hidden');
+  empty.classList.add('hidden');
+  allSubmissions = [];
+
+  try {
+    // Fetch all 3 tables
+    const [arrivalsRes, departuresRes, turnaroundRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_arrivals?select=*&order=created_at.desc&limit=50`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_departures?select=*&order=created_at.desc&limit=50`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_turnaround?select=*&order=created_at.desc&limit=50`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      })
+    ]);
+
+    const arrivals = await arrivalsRes.json();
+    const departures = await departuresRes.json();
+    const turnaround = await turnaroundRes.json();
+
+    // Tag each with type
+    const taggedArrivals = arrivals.map(r => ({ ...r, type: 'arrivals' }));
+    const taggedDepartures = departures.map(r => ({ ...r, type: 'departures' }));
+    const taggedTurnaround = turnaround.map(r => ({ ...r, type: 'turnaround' }));
+
+    // Combine and sort by date
+    allSubmissions = [...taggedArrivals, ...taggedDepartures, ...taggedTurnaround]
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    loading.classList.add('hidden');
+    filterHistory(currentFilter);
+
+  } catch (error) {
+    console.error(error);
+    loading.classList.add('hidden');
+    empty.classList.remove('hidden');
+    showToast('Failed to load submissions');
+  }
+}

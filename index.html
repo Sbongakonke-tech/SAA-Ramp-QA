@@ -699,6 +699,38 @@
 
     </div>
 </div>
+<!-- SUBMITTED FORMS SCREEN -->
+<div id="historyScreen" class="screen hidden">
+
+  <div class="form-header">
+    <button class="back-btn" onclick="goHomeHistory()">← Back</button>
+    <span class="form-title">Submitted Forms</span>
+    <button class="save-draft-btn" onclick="loadHistory()">Refresh</button>
+  </div>
+
+  <!-- FILTER TABS -->
+  <div class="history-tabs">
+    <button class="tab-btn active" id="tab-all" onclick="filterHistory('all')">All</button>
+    <button class="tab-btn" id="tab-arrivals" onclick="filterHistory('arrivals')">Arrivals</button>
+    <button class="tab-btn" id="tab-departures" onclick="filterHistory('departures')">Departures</button>
+    <button class="tab-btn" id="tab-turnaround" onclick="filterHistory('turnaround')">Turnaround</button>
+  </div>
+
+  <!-- LOADING STATE -->
+  <div id="historyLoading" class="history-loading">
+    <p>Loading submissions...</p>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div id="historyEmpty" class="history-empty hidden">
+    <p>📋</p>
+    <p>No submissions found</p>
+  </div>
+
+  <!-- SUBMISSIONS LIST -->
+  <div id="historyList" class="history-list hidden"></div>
+
+</div>
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
