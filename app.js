@@ -707,4 +707,96 @@ async function loadHistory() {
     empty.classList.remove('hidden');
     showToast('Failed to load submissions');
   }
+} 
+// ── HOME SCREEN ───────────────────────────────────────
+
+function updateClock() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  document.getElementById('welcomeTime').textContent = `${hours}:${minutes}`;
+
+  const greeting = hours < 12 ? 'Good morning,' : hours < 17 ? 'Good afternoon,' : 'Good evening,';
+  document.getElementById('welcomeGreeting').textContent = greeting;
+
+  const dateStr = now.toLocaleDateString('en-ZA', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+  document.getElementById('welcomeDate').textContent = dateStr;
 }
+
+async function loadTodayStats() {
+  const today = new Date().toISOString().split('T')[0];
+
+  try {
+    const [arrivalsRes, departuresRes, turnaroundRes] = await Promise.all([
+      fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_arrivals?select=id,flight_number,parking_bay,created_at&flight_date=eq.${today}&order=created_at.desc`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_departures?select=id,flight_number,parking_bay,created_at&flight_date=eq.${today}&order=created_at.desc`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      }),
+      fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_turnaround?select=id,arrival_flight_number,parking_bay,created_at&flight_date=eq.${today}&order=created_at.desc`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      })
+    ]);
+
+    const arrivals = await arrivalsRes.json();
+    const departures = await departuresRes.json();
+    const turnaround = await turnaroundRes.json();
+
+    // Update stats
+    document.getElementById('statArrivals').textContent = arrivals.length;
+    document.getElementById('statDepartures').textContent = departures.length;
+    document.getElementById('statTurnaround').textContent = turnaround.length;
+    document.getElementById('statTotal').textContent = arrivals.length + departures.length + turnaround.length;
+
+    // Build recent list
+    const taggedArrivals = arrivals.map(r => ({ ...r, type: 'arrivals', flight: r.flight_number }));
+    const taggedDepartures = departures.map(r => ({ ...r, type: 'departures', flight: r.flight_number }));
+    const taggedTurnaround = turnaround.map(r => ({ ...r, type: 'turnaround', flight: r.arrival_flight_number }));
+
+    const recent = [...taggedArrivals, ...taggedDepartures, ...taggedTurnaround]
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 5);
+
+    renderRecentSubmissions(recent);
+
+  } catch (error) {
+    console.error('Failed to load stats:', error);
+  }
+}
+
+function renderRecentSubmissions(submissions) {
+  const container = document.getElementById('recentSubmissions');
+
+  if (submissions.length === 0) {
+    container.innerHTML = '<div class="recent-empty">No submissions yet today</div>';
+    return;
+  }
+
+  const typeLabel = t => t === 'arrivals' ? 'Arrival' : t === 'departures' ? 'Departure' : 'Turnaround';
+  const typeClass = t => t === 'arrivals' ? 'type-arrival' : t === 'departures' ? 'type-departure' : 'type-turnaround';
+
+  container.innerHTML = submissions.map(s => {
+    const time = new Date(s.created_at).toLocaleTimeString('en-ZA', {
+      hour: '2-digit', minute: '2-digit'
+    });
+    return `
+      <div class="recent-card">
+        <div class="recent-card-left">
+          <div class="recent-flight">${s.flight || '—'}</div>
+          <div class="recent-meta">Bay ${s.parking_bay || '—'}</div>
+        </div>
+        <div class="recent-card-right">
+          <div class="recent-time">${time}</div>
+          <div class="recent-type ${typeClass(s.type)}">${typeLabel(s.type)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── INIT HOME ─────────────────────────────────────────
+updateClock();
+setInterval(updateClock, 1000);
+loadTodayStats();

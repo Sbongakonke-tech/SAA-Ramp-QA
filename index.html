@@ -14,39 +14,72 @@
 <body>
 </head> 
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="brand">
-      <img src="./logo.png" class="brand-logo" alt="SAA">
-      <div class="brand-text">
-        <h1>SAA Ramp QA</h1>
-        <p>Quality Assurance · Ground Services</p>
-      </div>
-    </div>
-    <div class="gold-bar"></div>
-  </header>
-
   <!-- HOME SCREEN -->
-  <div id="homeScreen" class="screen">
-    <div class="home-grid">
-      <button class="home-card arrival" onclick="openForm('arrival')">
-        <span class="home-icon">✈️</span>
-        <span class="home-label">QA Arrivals</span>
-      </button>
-      <button class="home-card departure" onclick="openForm('departure')">
-        <span class="home-icon">🛫</span>
-        <span class="home-label">QA Departures</span>
-      </button>
-      <button class="home-card turnaround" onclick="openForm('turnaround')">
-        <span class="home-icon">🔄</span>
-        <span class="home-label">Turnaround</span>
-      </button>
-      <button class="home-card history" onclick="openHistory()">
-        <span class="home-icon">📋</span>
-        <span class="home-label">Submitted Forms</span>
-      </button>
+<div id="homeScreen" class="screen">
+
+  <!-- WELCOME BAND -->
+  <div class="welcome-band">
+    <div class="welcome-left">
+      <p class="welcome-greeting" id="welcomeGreeting">Good morning,</p>
+      <p class="welcome-name">Ramp Agent</p>
+      <p class="welcome-date" id="welcomeDate">—</p>
+    </div>
+    <div class="welcome-right">
+      <div class="welcome-time" id="welcomeTime">—</div>
     </div>
   </div>
+
+  <!-- TODAY'S STATS -->
+  <div class="today-stats">
+    <div class="today-stat">
+      <div class="today-stat-num" id="statTotal">0</div>
+      <div class="today-stat-label">Today</div>
+    </div>
+    <div class="today-stat-divider"></div>
+    <div class="today-stat">
+      <div class="today-stat-num" id="statArrivals">0</div>
+      <div class="today-stat-label">Arrivals</div>
+    </div>
+    <div class="today-stat-divider"></div>
+    <div class="today-stat">
+      <div class="today-stat-num" id="statDepartures">0</div>
+      <div class="today-stat-label">Departures</div>
+    </div>
+    <div class="today-stat-divider"></div>
+    <div class="today-stat">
+      <div class="today-stat-num" id="statTurnaround">0</div>
+      <div class="today-stat-label">Turnaround</div>
+    </div>
+  </div>
+
+  <!-- NEW FORM SECTION -->
+  <div class="home-section-label">New form</div>
+  <div class="home-grid">
+    <button class="home-card arrival" onclick="openForm('arrival')">
+      <span class="home-icon">✈️</span>
+      <span class="home-label">QA Arrivals</span>
+    </button>
+    <button class="home-card departure" onclick="openForm('departure')">
+      <span class="home-icon">🛫</span>
+      <span class="home-label">QA Departures</span>
+    </button>
+    <button class="home-card turnaround" onclick="openForm('turnaround')">
+      <span class="home-icon">🔄</span>
+      <span class="home-label">Turnaround</span>
+    </button>
+    <button class="home-card history" onclick="openHistory()">
+      <span class="home-icon">📋</span>
+      <span class="home-label">Submitted Forms</span>
+    </button>
+  </div>
+
+  <!-- RECENT SUBMISSIONS -->
+  <div class="home-section-label">Recent submissions</div>
+  <div id="recentSubmissions" class="recent-list">
+    <div class="recent-empty">No submissions yet today</div>
+  </div>
+
+</div>
 
   <!-- ARRIVALS FORM SCREEN -->
   <div id="arrivalScreen" class="screen hidden">
