@@ -541,6 +541,164 @@
 
     </div>
 </div>
+<!-- TURNAROUND FORM SCREEN -->
+<div id="turnaroundScreen" class="screen hidden">
+
+    <div class="form-header">
+      <button class="back-btn" onclick="goHomeTurnaround()">← Back</button>
+      <span class="form-title">Turnaround</span>
+      <button class="save-draft-btn" onclick="saveTurnaroundDraft()">Save Draft</button>
+    </div>
+
+    <div class="form-body">
+
+      <!-- SECTION 1: TURNAROUND -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('ta-header')">
+          <span>Turnaround</span>
+          <span class="chevron" id="chevron-ta-header">▼</span>
+        </div>
+        <div class="section-body" id="body-ta-header">
+          <div class="field"><label>Arrival Flight Number</label><input type="text" id="ta_flightNumber" placeholder="SA404"></div>
+          <div class="field"><label>Date</label><input type="date" id="ta_flightDate"></div>
+          <div class="field"><label>TRC Coordinator Name</label><input type="text" id="ta_coordinatorName" placeholder="Name"></div>
+          <div class="field"><label>TRC at Parking Bay</label><input type="time" id="ta_trcAtParkingBay"></div>
+          <div class="field"><label>Parking Bay</label><input type="text" id="ta_parkingBay" placeholder="C1"></div>
+          <div class="field"><label>Bay Clear of FOD</label>
+            <select id="ta_bayClearFod">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Safety Cones in Place</label>
+            <select id="ta_safetyConesInPlace">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Number of Safety Cones</label><input type="number" id="ta_numberOfCones" placeholder="0"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: ARRIVAL FLIGHT DETAILS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('ta-flightdetails')">
+          <span>Arrival Flight Details</span>
+          <span class="chevron" id="chevron-ta-flightdetails">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-ta-flightdetails">
+          <div class="field"><label>A/C Type</label>
+            <select id="ta_aircraftType">
+              <option value="">Select</option>
+              <option>A319</option><option>A320</option><option>A330</option><option>B737</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>A/C Registration</label><input type="text" id="ta_registration" placeholder="ZSSZM"></div>
+          <div class="field"><label>STA</label><input type="time" id="ta_sta"></div>
+          <div class="field"><label>ETA</label><input type="time" id="ta_eta"></div>
+          <div class="field"><label>ATA</label><input type="time" id="ta_ata"></div>
+          <div class="field"><label>Chocked Time</label><input type="time" id="ta_chockedTime"></div>
+          <div class="field"><label>Thumbs Up</label><input type="time" id="ta_thumbsUp"></div>
+          <div class="checklist-label">Arrival Checklist</div>
+          <div class="checklist">
+            <label class="check-item"><input type="checkbox" id="ta_check1"> Bay is clear of FOD/GSE/Contamination</label>
+            <label class="check-item"><input type="checkbox" id="ta_check2"> Adequate chocks are available</label>
+            <label class="check-item"><input type="checkbox" id="ta_check3"> Ground/fixed power ready for use</label>
+            <label class="check-item"><input type="checkbox" id="ta_check4"> Aircraft chocked correctly</label>
+            <label class="check-item"><input type="checkbox" id="ta_check5"> TRC to approach aircraft when safe</label>
+            <label class="check-item"><input type="checkbox" id="ta_check6"> FDC to release brakes when safe</label>
+            <label class="check-item"><input type="checkbox" id="ta_check7"> Check for visible A/C damage/leaks</label>
+          </div>
+          <div class="field"><label>Signature</label><input type="text" id="ta_arrivalSignature" placeholder="Full name"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 3: ARRIVAL BAGGAGE -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('ta-baggage')">
+          <span>Arrival Baggage</span>
+          <span class="chevron" id="chevron-ta-baggage">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-ta-baggage">
+          <div class="field"><label>Supervisor Name</label><input type="text" id="ta_baggageSupervisor" placeholder="Name"></div>
+          <div class="field"><label>Radio Number</label><input type="text" id="ta_radioNumber" placeholder="Radio #"></div>
+          <div class="field"><label>Staff on Bay</label><input type="time" id="ta_staffOnBay"></div>
+          <div class="field"><label>Equipment on Bay</label><input type="time" id="ta_equipmentOnBay"></div>
+          <div class="field"><label>Step/Chute Parked</label><input type="time" id="ta_stepChuteParked"></div>
+          <div class="field"><label>GPU</label><input type="time" id="ta_gpu"></div>
+          <div class="field"><label>Cargo Holds Open</label><input type="time" id="ta_cargoHoldsOpen"></div>
+          <div class="field"><label>First Bag Off</label><input type="time" id="ta_firstBagOff"></div>
+          <div class="field"><label>First Bag Sent</label><input type="time" id="ta_firstBagSent"></div>
+          <div class="field"><label>Last Bag Off</label><input type="time" id="ta_lastBagOff"></div>
+          <div class="field"><label>Last Bag Sent</label><input type="time" id="ta_lastBagSent"></div>
+          <div class="field"><label>First Cargo Off</label><input type="time" id="ta_firstCargoOff"></div>
+          <div class="field"><label>Last Cargo Off</label><input type="time" id="ta_lastCargoOff"></div>
+          <div class="field"><label>Cargo Hold Inspection</label>
+            <select id="ta_cargoHoldInspection">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+          <div class="field"><label>Flight Supervisor Signature</label><input type="text" id="ta_flightSupSignature" placeholder="Full name"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: BUSES -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('ta-buses')">
+          <span>Buses</span>
+          <span class="chevron" id="chevron-ta-buses">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-ta-buses">
+          <div class="bus-wrap" id="taBusWrap">
+            <div class="bag-tag-row">
+              <div class="bag-tag-inputs">
+                <div class="field"><label>Bus Number</label><input type="text" class="ta-bus-number" placeholder="Bus #"></div>
+                <div class="field"><label>Bus Time</label><input type="time" class="ta-bus-time"></div>
+              </div>
+            </div>
+          </div>
+          <button class="add-tag-btn" onclick="addTaBusRow()">+ Add Bus</button>
+        </div>
+      </div>
+
+      <!-- SECTION 5: ARRIVAL FLIGHT PASSENGERS -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('ta-passengers')">
+          <span>Arrival Flight Passengers</span>
+          <span class="chevron" id="chevron-ta-passengers">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-ta-passengers">
+          <div class="field"><label>Arrival Staff on Bay</label><input type="time" id="ta_arrivalStaffOnBay"></div>
+          <div class="field"><label>First Passenger Off</label><input type="time" id="ta_firstPassengerOff"></div>
+          <div class="field"><label>Last Passenger Off</label><input type="time" id="ta_lastPassengerOff"></div>
+          <div class="field"><label>PAU Arrive</label><input type="time" id="ta_pauArrive"></div>
+          <div class="field"><label>PAU Depart</label><input type="time" id="ta_pauDepart"></div>
+        </div>
+      </div>
+
+      <!-- SECTION 6: ADDITIONAL INFORMATION -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection('ta-additional')">
+          <span>Additional Information</span>
+          <span class="chevron" id="chevron-ta-additional">▼</span>
+        </div>
+        <div class="section-body hidden" id="body-ta-additional">
+          <div class="field"><label>General Comments</label><textarea id="ta_commentsGeneral" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Passengers</label><textarea id="ta_commentsPassengers" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Airchefs</label><textarea id="ta_commentsAirchefs" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Grooming</label><textarea id="ta_commentsGrooming" rows="3" placeholder="Enter comments..."></textarea></div>
+          <div class="field"><label>Baggage</label><textarea id="ta_commentsBaggage" rows="3" placeholder="Enter comments..."></textarea></div>
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <div class="submit-wrap">
+        <button class="submit-btn" onclick="submitTurnaroundForm()">Submit Form</button>
+      </div>
+
+    </div>
+</div>
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 

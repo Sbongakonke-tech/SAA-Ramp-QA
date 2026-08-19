@@ -17,8 +17,10 @@ function openForm(type) {
     document.getElementById('arrivalScreen').classList.remove('hidden');
   } else if (type === 'departure') {
     document.getElementById('departureScreen').classList.remove('hidden');
+  } else if (type === 'turnaround') {
+    document.getElementById('turnaroundScreen').classList.remove('hidden');
   }
-}
+} 
 
 function goHome() {
   document.getElementById('arrivalScreen').classList.add('hidden');
@@ -417,4 +419,162 @@ async function submitDepartureForm() {
 }
 
 // Set today's date for departure form
-document.getElementById('dep_flightDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('dep_flightDate').value = new Date().toISOString().split('T')[0]; 
+
+// ── TURNAROUND FORM ───────────────────────────────────
+
+function goHomeTurnaround() {
+  document.getElementById('turnaroundScreen').classList.add('hidden');
+  document.getElementById('homeScreen').classList.remove('hidden');
+}
+
+// ── TURNAROUND BUSES ──────────────────────────────────
+function addTaBusRow() {
+  const wrap = document.getElementById('taBusWrap');
+  const row = document.createElement('div');
+  row.className = 'bag-tag-row';
+  row.innerHTML = `
+    <div class="bag-tag-inputs">
+      <div class="field"><label>Bus Number</label><input type="text" class="ta-bus-number" placeholder="Bus #"></div>
+      <div class="field"><label>Bus Time</label><input type="time" class="ta-bus-time"></div>
+    </div>
+  `;
+  wrap.appendChild(row);
+}
+
+function collectTaBuses() {
+  const buses = [];
+  document.querySelectorAll('#taBusWrap .bag-tag-row').forEach(row => {
+    const number = row.querySelector('.ta-bus-number')?.value || '';
+    const time = row.querySelector('.ta-bus-time')?.value || '';
+    if (number || time) {
+      buses.push({ number, time });
+    }
+  });
+  return buses;
+}
+
+// ── COLLECT TURNAROUND FORM DATA ──────────────────────
+function collectTurnaroundFormData() {
+  return {
+    // Header
+    arrival_flight_number: document.getElementById('ta_flightNumber').value,
+    flight_date: document.getElementById('ta_flightDate').value || null,
+    coordinator_name: document.getElementById('ta_coordinatorName').value,
+    trc_at_parking_bay: document.getElementById('ta_trcAtParkingBay').value || null,
+    parking_bay: document.getElementById('ta_parkingBay').value,
+    bay_clear_fod: document.getElementById('ta_bayClearFod').value,
+    safety_cones_in_place: document.getElementById('ta_safetyConesInPlace').value,
+    number_of_safety_cones: parseInt(document.getElementById('ta_numberOfCones').value) || 0,
+
+    // Arrival flight details
+    aircraft_type: document.getElementById('ta_aircraftType').value,
+    registration: document.getElementById('ta_registration').value,
+    sta: document.getElementById('ta_sta').value || null,
+    eta: document.getElementById('ta_eta').value || null,
+    ata: document.getElementById('ta_ata').value || null,
+    chocked_time: document.getElementById('ta_chockedTime').value || null,
+    thumbs_up: document.getElementById('ta_thumbsUp').value || null,
+
+    // Arrival checklist
+    check_bay_clear: document.getElementById('ta_check1').checked,
+    check_chocks_available: document.getElementById('ta_check2').checked,
+    check_ground_power: document.getElementById('ta_check3').checked,
+    check_aircraft_chocked: document.getElementById('ta_check4').checked,
+    check_trc_approach: document.getElementById('ta_check5').checked,
+    check_fdc_brakes: document.getElementById('ta_check6').checked,
+    check_ac_damage: document.getElementById('ta_check7').checked,
+    arrival_signature: document.getElementById('ta_arrivalSignature').value,
+
+    // Arrival baggage
+    baggage_supervisor: document.getElementById('ta_baggageSupervisor').value,
+    radio_number: document.getElementById('ta_radioNumber').value,
+    staff_on_bay: document.getElementById('ta_staffOnBay').value || null,
+    equipment_on_bay: document.getElementById('ta_equipmentOnBay').value || null,
+    step_chute_parked: document.getElementById('ta_stepChuteParked').value || null,
+    gpu: document.getElementById('ta_gpu').value || null,
+    cargo_holds_open: document.getElementById('ta_cargoHoldsOpen').value || null,
+    first_bag_off: document.getElementById('ta_firstBagOff').value || null,
+    first_bag_sent: document.getElementById('ta_firstBagSent').value || null,
+    last_bag_off: document.getElementById('ta_lastBagOff').value || null,
+    last_bag_sent: document.getElementById('ta_lastBagSent').value || null,
+    first_cargo_off: document.getElementById('ta_firstCargoOff').value || null,
+    last_cargo_off: document.getElementById('ta_lastCargoOff').value || null,
+    cargo_hold_inspection: document.getElementById('ta_cargoHoldInspection').value,
+    flight_sup_signature: document.getElementById('ta_flightSupSignature').value,
+
+    // Buses
+    bus_number: JSON.stringify(collectTaBuses()),
+    bus_time: null,
+
+    // Passengers
+    arrival_staff_on_bay: document.getElementById('ta_arrivalStaffOnBay').value || null,
+    first_passenger_off: document.getElementById('ta_firstPassengerOff').value || null,
+    last_passenger_off: document.getElementById('ta_lastPassengerOff').value || null,
+    pau_arrive: document.getElementById('ta_pauArrive').value || null,
+    pau_depart: document.getElementById('ta_pauDepart').value || null,
+
+    // Additional
+    comments_general: document.getElementById('ta_commentsGeneral').value,
+    comments_passengers: document.getElementById('ta_commentsPassengers').value,
+    comments_airchefs: document.getElementById('ta_commentsAirchefs').value,
+    comments_grooming: document.getElementById('ta_commentsGrooming').value,
+    comments_baggage: document.getElementById('ta_commentsBaggage').value,
+
+    form_status: 'Submitted'
+  };
+}
+
+// ── SAVE TURNAROUND DRAFT ─────────────────────────────
+function saveTurnaroundDraft() {
+  const data = collectTurnaroundFormData();
+  data.form_status = 'Draft';
+  localStorage.setItem('saa_qa_ta_draft', JSON.stringify(data));
+  showToast('✓ Draft saved');
+}
+
+// ── SUBMIT TURNAROUND FORM ────────────────────────────
+async function submitTurnaroundForm() {
+  const data = collectTurnaroundFormData();
+
+  if (!data.arrival_flight_number) {
+    showToast('Please enter a flight number');
+    return;
+  }
+
+  const submitBtn = document.querySelector('#turnaroundScreen .submit-btn');
+  submitBtn.textContent = 'Submitting...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_turnaround`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (response.ok) {
+      localStorage.removeItem('saa_qa_ta_draft');
+      showToast('✓ Form submitted successfully');
+      setTimeout(() => goHomeTurnaround(), 1500);
+    } else {
+      const err = await response.json();
+      console.error(err);
+      showToast('Submission failed — check console');
+    }
+  } catch (error) {
+    console.error(error);
+    showToast('Network error — try again');
+  } finally {
+    submitBtn.textContent = 'Submit Form';
+    submitBtn.disabled = false;
+  }
+}
+
+// Set today's date for turnaround form
+document.getElementById('ta_flightDate').value = new Date().toISOString().split('T')[0];
