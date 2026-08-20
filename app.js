@@ -262,12 +262,7 @@ async function submitForm() {
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_arrivals`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
+      headers: { ...getAuthHeaders(), 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
 
@@ -486,12 +481,7 @@ async function submitDepartureForm() {
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_departures`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
+      headers: { ...getAuthHeaders(), 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
 
@@ -645,12 +635,7 @@ async function submitTurnaroundForm() {
   try {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_turnaround`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-        'Prefer': 'return=minimal'
-      },
+      headers: { ...getAuthHeaders(), 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
 
@@ -769,13 +754,13 @@ async function loadHistory() {
     // Fetch all 3 tables
     const [arrivalsRes, departuresRes, turnaroundRes] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_arrivals?select=*&order=created_at.desc&limit=50`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+       headers: getAuthHeaders()
       }),
       fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_departures?select=*&order=created_at.desc&limit=50`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        headers: getAuthHeaders()
       }),
       fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_turnaround?select=*&order=created_at.desc&limit=50`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        headers: getAuthHeaders() 
       })
     ]);
 
@@ -825,13 +810,13 @@ async function loadTodayStats() {
   try {
     const [arrivalsRes, departuresRes, turnaroundRes] = await Promise.all([
       fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_arrivals?select=id,flight_number,parking_bay,created_at&flight_date=eq.${today}&order=created_at.desc`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        headers: getAuthHeaders()
       }),
       fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_departures?select=id,flight_number,parking_bay,created_at&flight_date=eq.${today}&order=created_at.desc`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        headers: getAuthHeaders()
       }),
       fetch(`${SUPABASE_URL}/rest/v1/ramp_qa_turnaround?select=id,arrival_flight_number,parking_bay,created_at&flight_date=eq.${today}&order=created_at.desc`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        headers: getAuthHeaders() 
       })
     ]);
 
