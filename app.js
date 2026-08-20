@@ -70,6 +70,8 @@ async function signIn() {
 function signOut() {
   localStorage.removeItem('saa_session');
   currentUser = null;
+  document.getElementById('signinEmail').value = '';
+  document.getElementById('signinPassword').value = '';
   document.getElementById('homeScreen').classList.add('hidden');
   document.getElementById('signInScreen').classList.remove('hidden');
   showToast('Signed out successfully');
