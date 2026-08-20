@@ -13,9 +13,30 @@
 <link rel="shortcut icon" href="./favicon-32.png">
 <body>
 </head> 
-
+<!-- SIGN IN SCREEN -->
+<div id="signInScreen" class="screen">
+  <div class="signin-wrap">
+    <div class="signin-logo-wrap">
+      <img src="./logo.png" class="signin-logo" alt="SAA">
+      <h1 class="signin-title">SAA Ramp QA</h1>
+      <p class="signin-subtitle">Ground Services · Quality Assurance</p>
+    </div>
+    <div class="signin-card">
+      <div class="field">
+        <label>Work Email</label>
+        <input type="email" id="signinEmail" placeholder="name@flysaa.com">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signinPassword" placeholder="Enter password">
+      </div>
+      <button class="submit-btn" id="signinBtn" onclick="signIn()">Sign In</button>
+      <p class="signin-hint">Use your SAA work email and password</p>
+    </div>
+  </div>
+</div>
   <!-- HOME SCREEN -->
-<div id="homeScreen" class="screen">
+<div id="homeScreen" class="screen hidden">
 
   <!-- WELCOME BAND -->
   <div class="welcome-band">
@@ -26,6 +47,7 @@
     </div>
     <div class="welcome-right">
       <div class="welcome-time" id="welcomeTime">—</div>
+      <button class="signout-btn" onclick="signOut()">Sign out</button>
     </div>
   </div>
 

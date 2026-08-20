@@ -1,3 +1,91 @@
+// ── AUTH ──────────────────────────────────────────────
+let currentUser = null;
+
+function getAuthHeaders() {
+  const session = JSON.parse(localStorage.getItem('saa_session') || '{}');
+  return {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${session.access_token || SUPABASE_KEY}`
+  };
+}
+
+async function signIn() {
+  const email = document.getElementById('signinEmail').value.trim();
+  const password = document.getElementById('signinPassword').value;
+
+  if (!email || !password) {
+    showToast('Please enter your email and password');
+    return;
+  }
+
+  const btn = document.getElementById('signinBtn');
+  btn.textContent = 'Signing in...';
+  btn.disabled = true;
+
+  try {
+    const response = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (data.access_token) {
+      currentUser = data.user;
+      localStorage.setItem('saa_session', JSON.stringify({
+        access_token: data.access_token,
+        user: data.user
+      }));
+
+      // Update welcome name
+      const name = data.user.email.split('@')[0];
+      const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+      document.querySelector('.welcome-name').textContent = formattedName;
+
+      // Navigate to home
+      document.getElementById('signInScreen').classList.add('hidden');
+      document.getElementById('homeScreen').classList.remove('hidden');
+      updateClock();
+      loadTodayStats();
+      showToast(`Welcome ${formattedName}`);
+
+    } else {
+      showToast('Invalid email or password');
+    }
+
+  } catch (error) {
+    console.error(error);
+    showToast('Sign in failed — check connection');
+  } finally {
+    btn.textContent = 'Sign In';
+    btn.disabled = false;
+  }
+}
+
+function signOut() {
+  localStorage.removeItem('saa_session');
+  currentUser = null;
+  document.getElementById('homeScreen').classList.add('hidden');
+  document.getElementById('signInScreen').classList.remove('hidden');
+  showToast('Signed out successfully');
+}
+
+function checkSession() {
+  const session = JSON.parse(localStorage.getItem('saa_session') || '{}');
+  if (session.access_token) {
+    currentUser = session.user;
+    const name = session.user.email.split('@')[0];
+    const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+    document.querySelector('.welcome-name').textContent = formattedName;
+    return true;
+  }
+  return false;
+}
 // ── SUPABASE CONFIG ───────────────────────────────────
 const SUPABASE_URL = 'https://fokealhvpgnjubfhknix.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva2VhbGh2cGduanViZmhrbml4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5NDIxOTcsImV4cCI6MjEwMjUxODE5N30.vxpgMApNNsDPKKR3Vt1e_OYeuv5tjg8_yb9hhEe6CRk';
@@ -803,7 +891,15 @@ function renderRecentSubmissions(submissions) {
 // ── INIT HOME ─────────────────────────────────────────
 updateClock();
 setInterval(updateClock, 1000);
-loadTodayStats();
+
+// Check if already signed in
+if (checkSession()) {
+  document.getElementById('signInScreen').classList.add('hidden');
+  document.getElementById('homeScreen').classList.remove('hidden');
+  loadTodayStats();
+} else {
+  document.getElementById('signInScreen').classList.remove('hidden');
+}
 // ── BOTTOM TOOLBAR ────────────────────────────────────
 
 let currentFormType = null;
