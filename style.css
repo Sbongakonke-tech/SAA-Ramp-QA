@@ -781,3 +781,62 @@ body {
   width: 100%;
 }
 .signout-btn:active { opacity: 0.8; }
+/* ── TIMESTAMP BUTTONS ───────────────────────────────── */
+.time-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.time-field label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.timestamp-btn {
+  width: 100%;
+  padding: 13px;
+  border: 1.5px dashed var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: "Segoe UI", Arial, sans-serif;
+  text-align: left;
+  transition: all .2s;
+}
+.timestamp-btn:active { opacity: 0.8; }
+.timestamp-btn.captured {
+  background: rgba(21,153,71,0.08);
+  border: 1.5px solid var(--green);
+  color: var(--green);
+}
+.timestamp-btn.captured::before {
+  content: '✓ ';
+}
+
+/* ── PERFORMANCE BADGE ───────────────────────────────── */
+.perf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.perf-ontime {
+  background: rgba(21,153,71,0.12);
+  color: var(--green);
+}
+.perf-light {
+  background: rgba(245,164,0,0.12);
+  color: var(--amber);
+}
+.perf-extreme {
+  background: rgba(220,38,38,0.12);
+  color: var(--red);
+}

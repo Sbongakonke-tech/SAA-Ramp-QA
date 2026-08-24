@@ -3,10 +3,16 @@ let currentUser = null;
 
 function getAuthHeaders() {
   const session = JSON.parse(localStorage.getItem('saa_session') || '{}');
+  const token = session.access_token;
+  if (!token) {
+    // Session expired — redirect to sign in
+    signOut();
+    return {};
+  }
   return {
     'Content-Type': 'application/json',
     'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${session.access_token || SUPABASE_KEY}`
+    'Authorization': `Bearer ${token}`
   };
 }
 
@@ -88,6 +94,60 @@ function checkSession() {
   }
   return false;
 }
+// ── TIMESTAMPS ────────────────────────────────────────
+
+const capturedTimes = {};
+
+function captureTime(fieldId, btnId) {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  const timeStr = `${hours}:${minutes}`;
+  const fullTime = `${hours}:${minutes}:${seconds}`;
+
+  // Store the time
+  capturedTimes[fieldId] = fullTime;
+
+  // Update button appearance
+  const btn = document.getElementById(btnId);
+  btn.textContent = timeStr;
+  btn.classList.add('captured');
+  btn.disabled = true;
+}
+
+function getTime(fieldId) {
+  return capturedTimes[fieldId] || null;
+}
+
+function resetTimes(prefix) {
+  // Reset all captured times for a form
+  Object.keys(capturedTimes).forEach(key => {
+    if (key.startsWith(prefix)) {
+      delete capturedTimes[key];
+    }
+  });
+  // Reset all buttons with that prefix
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(btn => {
+    if (btn.classList.contains('timestamp-btn')) {
+      btn.textContent = 'Tap to capture time';
+      btn.classList.remove('captured');
+      btn.disabled = false;
+    }
+  });
+}
+
+function calcPerformance(startTime, endTime) {
+  if (!startTime || !endTime) return null;
+  const [sh, sm] = startTime.split(':').map(Number);
+  const [eh, em] = endTime.split(':').map(Number);
+  const startMins = sh * 60 + sm;
+  const endMins = eh * 60 + em;
+  const diff = endMins - startMins;
+  if (diff <= 40) return { label: 'On Time', class: 'perf-ontime', icon: '🟢', mins: diff };
+  if (diff <= 60) return { label: 'Light Delay', class: 'perf-light', icon: '🟡', mins: diff };
+  return { label: 'Extreme Delay', class: 'perf-extreme', icon: '🔴', mins: diff };
+}
 // ── SUPABASE CONFIG ───────────────────────────────────
 const SUPABASE_URL = 'https://fokealhvpgnjubfhknix.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva2VhbGh2cGduanViZmhrbml4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5NDIxOTcsImV4cCI6MjEwMjUxODE5N30.vxpgMApNNsDPKKR3Vt1e_OYeuv5tjg8_yb9hhEe6CRk';
@@ -140,7 +200,7 @@ function collectFormData() {
     flight_number: document.getElementById('flightNumber').value,
     flight_date: document.getElementById('flightDate').value || null,
     coordinator_name: document.getElementById('coordinatorName').value,
-    trc_at_parking_bay: document.getElementById('trcAtParkingBay').value || null,
+    trc_at_parking_bay: getTime('trcAtParkingBay'),
     parking_bay: document.getElementById('parkingBay').value,
     bay_clear_fod: document.getElementById('bayClearFod').value,
     safety_cones_in_place: document.getElementById('safetyConesInPlace').value,
@@ -152,8 +212,8 @@ function collectFormData() {
     sta: document.getElementById('sta').value || null,
     eta: document.getElementById('eta').value || null,
     ata: document.getElementById('ata').value || null,
-    chocked_time: document.getElementById('chockedTime').value || null,
-    thumbs_up: document.getElementById('thumbsUp').value || null,
+    chocked_time: getTime('chockedTime'),
+thumbs_up: getTime('thumbsUp'),
 
     // Checklist
     check_bay_clear: document.getElementById('check1').checked,
@@ -171,17 +231,17 @@ function collectFormData() {
     // Baggage
     baggage_supervisor: document.getElementById('baggageSupervisor').value,
     radio_number: document.getElementById('radioNumber').value,
-    staff_on_bay: document.getElementById('staffOnBay').value || null,
-    equipment_on_bay: document.getElementById('equipmentOnBay').value || null,
-    step_chute_parked: document.getElementById('stepChuteParked').value || null,
-    gpu: document.getElementById('gpu').value || null,
-    cargo_holds_open: document.getElementById('cargoHoldsOpen').value || null,
-    first_bag_off: document.getElementById('firstBagOff').value || null,
-    first_bag_sent: document.getElementById('firstBagSent').value || null,
-    last_bag_off: document.getElementById('lastBagOff').value || null,
-    last_bag_sent: document.getElementById('lastBagSent').value || null,
-    first_cargo_off: document.getElementById('firstCargoOff').value || null,
-    last_cargo_off: document.getElementById('lastCargoOff').value || null,
+    staff_on_bay: getTime('staffOnBay'),
+equipment_on_bay: getTime('equipmentOnBay'),
+step_chute_parked: getTime('stepChuteParked'),
+gpu: getTime('gpu'),
+cargo_holds_open: getTime('cargoHoldsOpen'),
+first_bag_off: getTime('firstBagOff'),
+first_bag_sent: getTime('firstBagSent'),
+last_bag_off: getTime('lastBagOff'),
+last_bag_sent: getTime('lastBagSent'),
+first_cargo_off: getTime('firstCargoOff'),
+last_cargo_off: getTime('lastCargoOff'),
     cargo_hold_inspection: document.getElementById('cargoHoldInspection').value,
 
     // Buses
@@ -189,22 +249,22 @@ function collectFormData() {
     bus_time: document.getElementById('busTime').value || null,
 
     // Passengers
-    arrival_staff_on_bay: document.getElementById('arrivalStaffOnBay').value || null,
-    first_passenger_off: document.getElementById('firstPassengerOff').value || null,
-    last_passenger_off: document.getElementById('lastPassengerOff').value || null,
-    pau_arrive: document.getElementById('pauArrive').value || null,
-    pau_depart: document.getElementById('pauDepart').value || null,
+    arrival_staff_on_bay: getTime('arrivalStaffOnBay'),
+first_passenger_off: getTime('firstPassengerOff'),
+last_passenger_off: getTime('lastPassengerOff'),
+pau_arrive: getTime('pauArrive'),
+pau_depart: getTime('pauDepart'),
 
     // Grooming
     aircraft_clean_type: document.getElementById('aircraftCleanType').value,
-    grooming_on_aircraft: document.getElementById('groomingOn').value || null,
-    grooming_off_aircraft: document.getElementById('groomingOff').value || null,
+   grooming_on_aircraft: getTime('groomingOn'),
+grooming_off_aircraft: getTime('groomingOff'),
     potable_water: document.getElementById('potableWater').value,
     waste_services_done: document.getElementById('wasteServicesDone').value,
 
     // Airchefs
-    start_offloading: document.getElementById('startOffloading').value || null,
-    completed_offloading: document.getElementById('completedOffloading').value || null,
+   start_offloading: getTime('startOffloading'),
+completed_offloading: getTime('completedOffloading'),
     bars_sealed: document.getElementById('barsSealed').value,
 
     // Additional
@@ -265,7 +325,11 @@ async function submitForm() {
       headers: { ...getAuthHeaders(), 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
-
+if (response.status === 401) {
+  showToast('Session expired — please sign in again');
+  signOut();
+  return;
+}
     if (response.ok) {
       localStorage.removeItem('saa_qa_draft');
       showToast('✓ Form submitted successfully');
@@ -484,7 +548,11 @@ async function submitDepartureForm() {
       headers: { ...getAuthHeaders(), 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
-
+if (response.status === 401) {
+  showToast('Session expired — please sign in again');
+  signOut();
+  return;
+}
     if (response.ok) {
       localStorage.removeItem('saa_qa_dep_draft');
       showToast('✓ Form submitted successfully');
@@ -638,7 +706,11 @@ async function submitTurnaroundForm() {
       headers: { ...getAuthHeaders(), 'Prefer': 'return=minimal' },
       body: JSON.stringify(data)
     });
-
+if (response.status === 401) {
+  showToast('Session expired — please sign in again');
+  signOut();
+  return;
+}
     if (response.ok) {
       localStorage.removeItem('saa_qa_ta_draft');
       showToast('✓ Form submitted successfully');
@@ -764,9 +836,15 @@ async function loadHistory() {
       })
     ]);
 
-    const arrivals = await arrivalsRes.json();
-    const departures = await departuresRes.json();
-    const turnaround = await turnaroundRes.json();
+   if (arrivalsRes.status === 401) {
+  showToast('Session expired — please sign in again');
+  signOut();
+  return;
+}
+
+const arrivals = await arrivalsRes.json();
+const departures = await departuresRes.json();
+const turnaround = await turnaroundRes.json();
 
     // Tag each with type
     const taggedArrivals = arrivals.map(r => ({ ...r, type: 'arrivals' }));
