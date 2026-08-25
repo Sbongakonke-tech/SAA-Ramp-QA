@@ -805,7 +805,14 @@ function renderHistory(submissions) {
         </div>
         <div class="history-card-bottom">
           <span class="history-submitted">Submitted ${date} at ${time}</span>
-          <span class="history-status">${s.form_status || 'Submitted'}</span>
+          ${(() => {
+  const startTime = s.trc_at_parking_bay;
+  const endTime = s.thumbs_up || s.atd;
+  const perf = calcPerformance(startTime, endTime);
+  return perf ?
+    `<span class="perf-badge ${perf.class}">${perf.icon} ${perf.label} · ${perf.mins} mins</span>` :
+    `<span class="history-status">${s.form_status || 'Submitted'}</span>`;
+})()}
         </div>
       </div>`;
   }).join('');
@@ -938,11 +945,21 @@ function renderRecentSubmissions(submissions) {
     const time = new Date(s.created_at).toLocaleTimeString('en-ZA', {
       hour: '2-digit', minute: '2-digit'
     });
+
+    // Calculate performance
+    const startTime = s.trc_at_parking_bay;
+    const endTime = s.thumbs_up || s.atd;
+    const perf = calcPerformance(startTime, endTime);
+    const perfBadge = perf ?
+      `<div class="perf-badge ${perf.class}">${perf.icon} ${perf.label} · ${perf.mins} mins</div>` :
+      '';
+
     return `
       <div class="recent-card">
         <div class="recent-card-left">
-          <div class="recent-flight">${s.flight || '—'}</div>
+          <div class="recent-flight">${s.flight_number || s.arrival_flight_number || '—'}</div>
           <div class="recent-meta">Bay ${s.parking_bay || '—'}</div>
+          ${perfBadge}
         </div>
         <div class="recent-card-right">
           <div class="recent-time">${time}</div>
