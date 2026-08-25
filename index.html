@@ -396,7 +396,10 @@
           <div class="field"><label>Flight Number</label><input type="text" id="dep_flightNumber" placeholder="SA405"></div>
           <div class="field"><label>Date</label><input type="date" id="dep_flightDate"></div>
           <div class="field"><label>TRC Coordinator Name</label><input type="text" id="dep_coordinatorName" placeholder="Name"></div>
-          <div class="field"><label>TRC at Parking Bay</label><input type="time" id="dep_trcAtParkingBay"></div>
+        <div class="time-field">
+  <label>TRC at Parking Bay</label>
+  <button class="timestamp-btn" id="btn_dep_trcAtParkingBay" onclick="captureTime('dep_trcAtParkingBay', 'btn_dep_trcAtParkingBay')">Tap to capture time</button>
+</div>
           <div class="field"><label>Parking Bay</label><input type="text" id="dep_parkingBay" placeholder="C1"></div>
           <div class="field"><label>Bay Clear of FOD</label>
             <select id="dep_bayClearFod">
@@ -429,9 +432,15 @@
           </div>
           <div class="field"><label>A/C Registration</label><input type="text" id="dep_registration" placeholder="ZSSZM"></div>
           <div class="field"><label>STD</label><input type="time" id="dep_std"></div>
-          <div class="field"><label>Flight Deck Arrive Onboard</label><input type="time" id="dep_flightDeckArrive"></div>
+          <div class="time-field">
+  <label>Flight Deck Arrive Onboard</label>
+  <button class="timestamp-btn" id="btn_dep_flightDeckArrive" onclick="captureTime('dep_flightDeckArrive', 'btn_dep_flightDeckArrive')">Tap to capture time</button>
+</div>
           <div class="field"><label>Captain's Name</label><input type="text" id="dep_captainsName" placeholder="Name"></div>
-          <div class="field"><label>Cabin Crew Arrive Onboard</label><input type="time" id="dep_cabinCrewArrive"></div>
+         <div class="time-field">
+  <label>Cabin Crew Arrive Onboard</label>
+  <button class="timestamp-btn" id="btn_dep_cabinCrewArrive" onclick="captureTime('dep_cabinCrewArrive', 'btn_dep_cabinCrewArrive')">Tap to capture time</button>
+</div>
           <div class="field"><label>Purser's Name</label><input type="text" id="dep_pursersName" placeholder="Name"></div>
           <div class="field"><label>Expected Pax Totals J/C</label><input type="number" id="dep_expectedPaxJC" placeholder="0"></div>
           <div class="field"><label>Expected Pax Totals Y/C</label><input type="number" id="dep_expectedPaxYC" placeholder="0"></div>
@@ -445,8 +454,14 @@
           <span class="chevron" id="chevron-dep-fuelling">▼</span>
         </div>
         <div class="section-body hidden" id="body-dep-fuelling">
-          <div class="field"><label>Fuel Bowser on Bay</label><input type="time" id="dep_fuelBowserOnBay"></div>
-          <div class="field"><label>Fuelling Completed</label><input type="time" id="dep_fuellingCompleted"></div>
+          <div class="time-field">
+  <label>Fuel Bowser on Bay</label>
+  <button class="timestamp-btn" id="btn_dep_fuelBowserOnBay" onclick="captureTime('dep_fuelBowserOnBay', 'btn_dep_fuelBowserOnBay')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Fuelling Completed</label>
+  <button class="timestamp-btn" id="btn_dep_fuellingCompleted" onclick="captureTime('dep_fuellingCompleted', 'btn_dep_fuellingCompleted')">Tap to capture time</button>
+</div>
           <div class="field"><label>RTOW</label><input type="text" id="dep_rtow" placeholder="kg"></div>
           <div class="field"><label>Block Fuel</label><input type="text" id="dep_blockFuel" placeholder="kg"></div>
           <div class="field"><label>Trip Fuel</label><input type="text" id="dep_tripFuel" placeholder="kg"></div>
@@ -469,12 +484,30 @@
         <div class="section-body hidden" id="body-dep-baggage">
           <div class="field"><label>Supervisor Name</label><input type="text" id="dep_baggageSupervisor" placeholder="Name"></div>
           <div class="field"><label>Radio Number</label><input type="text" id="dep_radioNumber" placeholder="Radio #"></div>
-          <div class="field"><label>Staff on Bay</label><input type="time" id="dep_staffOnBay"></div>
-          <div class="field"><label>Equipment on Bay</label><input type="time" id="dep_equipmentOnBay"></div>
-          <div class="field"><label>Step/Chute Parked</label><input type="time" id="dep_stepChuteParked"></div>
-          <div class="field"><label>GPU</label><input type="time" id="dep_gpu"></div>
-          <div class="field"><label>Cargo on Bay</label><input type="time" id="dep_cargoOnBay"></div>
-          <div class="field"><label>Final Baggage on Bay</label><input type="time" id="dep_finalBaggageOnBay"></div>
+         <div class="time-field">
+  <label>Staff on Bay</label>
+  <button class="timestamp-btn" id="btn_dep_staffOnBay" onclick="captureTime('dep_staffOnBay', 'btn_dep_staffOnBay')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Equipment on Bay</label>
+  <button class="timestamp-btn" id="btn_dep_equipmentOnBay" onclick="captureTime('dep_equipmentOnBay', 'btn_dep_equipmentOnBay')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Step/Chute Parked</label>
+  <button class="timestamp-btn" id="btn_dep_stepChuteParked" onclick="captureTime('dep_stepChuteParked', 'btn_dep_stepChuteParked')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>GPU</label>
+  <button class="timestamp-btn" id="btn_dep_gpu" onclick="captureTime('dep_gpu', 'btn_dep_gpu')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Cargo on Bay</label>
+  <button class="timestamp-btn" id="btn_dep_cargoOnBay" onclick="captureTime('dep_cargoOnBay', 'btn_dep_cargoOnBay')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Final Baggage on Bay</label>
+  <button class="timestamp-btn" id="btn_dep_finalBaggageOnBay" onclick="captureTime('dep_finalBaggageOnBay', 'btn_dep_finalBaggageOnBay')">Tap to capture time</button>
+</div>
           <div class="field"><label>BRS Manifest</label><input type="text" id="dep_brsManifest" placeholder="Manifest #"></div>
           <div class="field"><label>Baggage Expected</label><input type="number" id="dep_baggageExpected" placeholder="0"></div>
           <div class="field"><label>Final Baggage Received</label><input type="number" id="dep_finalBaggageReceived" placeholder="0"></div>
@@ -503,8 +536,14 @@
               <option>Deep Clean</option><option>Nightstop</option><option>Check Clean</option>
             </select>
           </div>
-          <div class="field"><label>Grooming On A/C</label><input type="time" id="dep_groomingOn"></div>
-          <div class="field"><label>Grooming Off A/C</label><input type="time" id="dep_groomingOff"></div>
+         <div class="time-field">
+  <label>Grooming On A/C</label>
+  <button class="timestamp-btn" id="btn_dep_groomingOn" onclick="captureTime('dep_groomingOn', 'btn_dep_groomingOn')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Grooming Off A/C</label>
+  <button class="timestamp-btn" id="btn_dep_groomingOff" onclick="captureTime('dep_groomingOff', 'btn_dep_groomingOff')">Tap to capture time</button>
+</div>
           <div class="field"><label>Customs Bin Loaded</label>
             <select id="dep_customsBinLoaded">
               <option value="">Select</option><option>Yes</option><option>No</option>
@@ -549,17 +588,35 @@
           <span class="chevron" id="chevron-dep-boarding">▼</span>
         </div>
         <div class="section-body hidden" id="body-dep-boarding">
-          <div class="field"><label>OK to Board</label><input type="time" id="dep_okToBoard"></div>
+         <div class="time-field">
+  <label>OK to Board</label>
+  <button class="timestamp-btn" id="btn_dep_okToBoard" onclick="captureTime('dep_okToBoard', 'btn_dep_okToBoard')">Tap to capture time</button>
+</div>
           <div class="field"><label>Hand Luggage Staff</label>
             <select id="dep_handLuggageStaff">
               <option value="">Select</option><option>Yes</option><option>No</option>
             </select>
           </div>
-          <div class="field"><label>First Passenger Boarded</label><input type="time" id="dep_firstPassengerBoarded"></div>
-          <div class="field"><label>Last Passenger Boarded</label><input type="time" id="dep_lastPassengerBoarded"></div>
-          <div class="field"><label>Final Slip Received</label><input type="time" id="dep_finalSlipReceived"></div>
-          <div class="field"><label>PAU on Bay</label><input type="time" id="dep_pauOnBay"></div>
-          <div class="field"><label>PAU Leave Bay</label><input type="time" id="dep_pauLeaveBay"></div>
+          <div class="time-field">
+  <label>First Passenger Boarded</label>
+  <button class="timestamp-btn" id="btn_dep_firstPassengerBoarded" onclick="captureTime('dep_firstPassengerBoarded', 'btn_dep_firstPassengerBoarded')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Last Passenger Boarded</label>
+  <button class="timestamp-btn" id="btn_dep_lastPassengerBoarded" onclick="captureTime('dep_lastPassengerBoarded', 'btn_dep_lastPassengerBoarded')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Final Slip Received</label>
+  <button class="timestamp-btn" id="btn_dep_finalSlipReceived" onclick="captureTime('dep_finalSlipReceived', 'btn_dep_finalSlipReceived')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>PAU on Bay</label>
+  <button class="timestamp-btn" id="btn_dep_pauOnBay" onclick="captureTime('dep_pauOnBay', 'btn_dep_pauOnBay')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>PAU Leave Bay</label>
+  <button class="timestamp-btn" id="btn_dep_pauLeaveBay" onclick="captureTime('dep_pauLeaveBay', 'btn_dep_pauLeaveBay')">Tap to capture time</button>
+</div>
           <div class="checklist-label">Passenger Figures</div>
           <div class="field"><label>Final Passenger Totals J/C</label><input type="number" id="dep_finalPaxJC" placeholder="0"></div>
           <div class="field"><label>Final Passenger Totals Y/C</label><input type="number" id="dep_finalPaxYC" placeholder="0"></div>
@@ -575,8 +632,14 @@
           <span class="chevron" id="chevron-dep-airchefs">▼</span>
         </div>
         <div class="section-body hidden" id="body-dep-airchefs">
-          <div class="field"><label>Start Loading</label><input type="time" id="dep_startLoading"></div>
-          <div class="field"><label>Complete Loading</label><input type="time" id="dep_completeLoading"></div>
+          <div class="time-field">
+  <label>Start Loading</label>
+  <button class="timestamp-btn" id="btn_dep_startLoading" onclick="captureTime('dep_startLoading', 'btn_dep_startLoading')">Tap to capture time</button>
+</div>
+        <div class="time-field">
+  <label>Complete Loading</label>
+  <button class="timestamp-btn" id="btn_dep_completeLoading" onclick="captureTime('dep_completeLoading', 'btn_dep_completeLoading')">Tap to capture time</button>
+</div>
           <div class="field"><label>A/C Configuration J/C</label><input type="number" id="dep_acConfigJC" placeholder="0"></div>
           <div class="field"><label>A/C Configuration Y/C</label><input type="number" id="dep_acConfigYC" placeholder="0"></div>
           <div class="field"><label>Passenger Booked J/C</label><input type="number" id="dep_paxBookedJC" placeholder="0"></div>
@@ -589,7 +652,10 @@
           <div class="field"><label>Total Meals Y/C</label><input type="number" id="dep_totalMealsYC" placeholder="0"></div>
           <div class="field"><label>Return Meals J/C</label><input type="number" id="dep_returnMealsJC" placeholder="0"></div>
           <div class="field"><label>Return Meals Y/C</label><input type="number" id="dep_returnMealsYC" placeholder="0"></div>
-          <div class="field"><label>Airchefs Sign Off</label><input type="time" id="dep_airchefsSignoff"></div>
+         <div class="time-field">
+  <label>Airchefs Sign Off</label>
+  <button class="timestamp-btn" id="btn_dep_airchefsSignoff" onclick="captureTime('dep_airchefsSignoff', 'btn_dep_airchefsSignoff')">Tap to capture time</button>
+</div>
         </div>
       </div>
 
@@ -600,8 +666,14 @@
           <span class="chevron" id="chevron-dep-security">▼</span>
         </div>
         <div class="section-body hidden" id="body-dep-security">
-          <div class="field"><label>Security Check Started</label><input type="time" id="dep_securityStarted"></div>
-          <div class="field"><label>Security Check Stopped</label><input type="time" id="dep_securityStopped"></div>
+          <div class="time-field">
+  <label>Security Check Started</label>
+  <button class="timestamp-btn" id="btn_dep_securityStarted" onclick="captureTime('dep_securityStarted', 'btn_dep_securityStarted')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Security Check Stopped</label>
+  <button class="timestamp-btn" id="btn_dep_securityStopped" onclick="captureTime('dep_securityStopped', 'btn_dep_securityStopped')">Tap to capture time</button>
+</div>
           <div class="field"><label>Security Check Found</label><input type="text" id="dep_securityFound" placeholder="Details if anything found"></div>
           <div class="checklist-label">Bag Tags</div>
           <div class="bag-tags-wrap" id="bagTagsWrap">
@@ -623,11 +695,26 @@
           <span class="chevron" id="chevron-dep-checks">▼</span>
         </div>
         <div class="section-body hidden" id="body-dep-checks">
-          <div class="field"><label>TUG on Bay</label><input type="time" id="dep_tugOnBay"></div>
-          <div class="field"><label>Holds Closed</label><input type="time" id="dep_holdsClosed"></div>
-          <div class="field"><label>Doors Closed</label><input type="time" id="dep_doorsClosed"></div>
-          <div class="field"><label>Stairs Removed</label><input type="time" id="dep_stairsRemoved"></div>
-          <div class="field"><label>ATD</label><input type="time" id="dep_atd"></div>
+          <div class="time-field">
+  <label>TUG on Bay</label>
+  <button class="timestamp-btn" id="btn_dep_tugOnBay" onclick="captureTime('dep_tugOnBay', 'btn_dep_tugOnBay')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Holds Closed</label>
+  <button class="timestamp-btn" id="btn_dep_holdsClosed" onclick="captureTime('dep_holdsClosed', 'btn_dep_holdsClosed')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Doors Closed</label>
+  <button class="timestamp-btn" id="btn_dep_doorsClosed" onclick="captureTime('dep_doorsClosed', 'btn_dep_doorsClosed')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>Stairs Removed</label>
+  <button class="timestamp-btn" id="btn_dep_stairsRemoved" onclick="captureTime('dep_stairsRemoved', 'btn_dep_stairsRemoved')">Tap to capture time</button>
+</div>
+<div class="time-field">
+  <label>ATD</label>
+  <button class="timestamp-btn" id="btn_dep_atd" onclick="captureTime('dep_atd', 'btn_dep_atd')">Tap to capture time</button>
+</div>
           <div class="checklist-label">Departure Checklist</div>
           <div class="checklist">
             <label class="check-item"><input type="checkbox" id="dep_check1"> GSE is moved from the A/C</label>
