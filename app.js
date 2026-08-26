@@ -908,11 +908,26 @@ async function loadTodayStats() {
     const departures = await departuresRes.json();
     const turnaround = await turnaroundRes.json();
 
-    // Update stats
-    document.getElementById('statArrivals').textContent = arrivals.length;
-    document.getElementById('statDepartures').textContent = departures.length;
-    document.getElementById('statTurnaround').textContent = turnaround.length;
-    document.getElementById('statTotal').textContent = arrivals.length + departures.length + turnaround.length;
+    
+   // Update stats
+const allToday = [...taggedArrivals, ...taggedDepartures, ...taggedTurnaround];
+const onTime = allToday.filter(s => {
+  const perf = calcPerformance(s.trc_at_parking_bay, s.thumbs_up || s.atd);
+  return perf && perf.label === 'On Time';
+}).length;
+const lightDelay = allToday.filter(s => {
+  const perf = calcPerformance(s.trc_at_parking_bay, s.thumbs_up || s.atd);
+  return perf && perf.label === 'Light Delay';
+}).length;
+const extremeDelay = allToday.filter(s => {
+  const perf = calcPerformance(s.trc_at_parking_bay, s.thumbs_up || s.atd);
+  return perf && perf.label === 'Extreme Delay';
+}).length;
+
+document.getElementById('statTotal').textContent = allToday.length;
+document.getElementById('statArrivals').textContent = onTime;
+document.getElementById('statDepartures').textContent = lightDelay;
+document.getElementById('statTurnaround').textContent = extremeDelay;
 
     // Build recent list
     const taggedArrivals = arrivals.map(r => ({ ...r, type: 'arrivals', flight: r.flight_number }));
