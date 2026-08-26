@@ -163,6 +163,10 @@ function showToast(msg) {
 // ── NAVIGATION ────────────────────────────────────────
 function openForm(type) {
   document.getElementById('homeScreen').classList.add('hidden');
+
+  // Reset captured times for this form
+  resetTimes(type === 'arrival' ? '' : type === 'departure' ? 'dep_' : 'ta_');
+
   if (type === 'arrival') {
     document.getElementById('arrivalScreen').classList.remove('hidden');
   } else if (type === 'departure') {
