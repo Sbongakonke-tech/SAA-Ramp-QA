@@ -173,14 +173,14 @@
 
           <div class="checklist-label">Arrival Checklist</div>
           <div class="checklist">
-            <label class="check-item"><input type="checkbox" id="check1"> Bay is clear of FOD/GSE/Contamination</label>
-            <label class="check-item"><input type="checkbox" id="check2"> Adequate chocks are available</label>
-            <label class="check-item"><input type="checkbox" id="check3"> Ground/fixed power ready for use</label>
-            <label class="check-item"><input type="checkbox" id="check4"> Aircraft chocked correctly</label>
-            <label class="check-item"><input type="checkbox" id="check5"> TRC to approach aircraft when safe</label>
-            <label class="check-item"><input type="checkbox" id="check6"> FDC to release brakes when safe</label>
-            <label class="check-item"><input type="checkbox" id="check7"> Check for visible A/C damage/leaks</label>
-          </div>
+  <label class="check-item"><input type="checkbox" id="check1" onchange="recordCheckTime('check1', this)"> Bay is clear of FOD/GSE/Contamination<span class="check-time" id="check1_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="check2" onchange="recordCheckTime('check2', this)"> Adequate chocks are available<span class="check-time" id="check2_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="check3" onchange="recordCheckTime('check3', this)"> Ground/fixed power ready for use<span class="check-time" id="check3_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="check4" onchange="recordCheckTime('check4', this)"> Aircraft chocked correctly<span class="check-time" id="check4_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="check5" onchange="recordCheckTime('check5', this)"> TRC to approach aircraft when safe<span class="check-time" id="check5_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="check6" onchange="recordCheckTime('check6', this)"> FDC to release brakes when safe<span class="check-time" id="check6_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="check7" onchange="recordCheckTime('check7', this)"> Check for visible A/C damage/leaks<span class="check-time" id="check7_time"></span></label>
+</div>
 
           <div class="field"><label>Signature</label><input type="text" id="inboundSignature" placeholder="Full name"></div>
         </div>
@@ -717,14 +717,14 @@
 </div>
           <div class="checklist-label">Departure Checklist</div>
           <div class="checklist">
-            <label class="check-item"><input type="checkbox" id="dep_check1"> GSE is moved from the A/C</label>
-            <label class="check-item"><input type="checkbox" id="dep_check2"> GSE parked at the restricted area</label>
-            <label class="check-item"><input type="checkbox" id="dep_check3"> Towbar/tug connected correctly</label>
-            <label class="check-item"><input type="checkbox" id="dep_check4"> Protection covers/plugs removed</label>
-            <label class="check-item"><input type="checkbox" id="dep_check5"> Intakes/vents/exhaust clear from FOD</label>
-            <label class="check-item"><input type="checkbox" id="dep_check6"> All panels/doors closed and secured</label>
-            <label class="check-item"><input type="checkbox" id="dep_check7"> Check for visible A/C damage/leaks</label>
-          </div>
+  <label class="check-item"><input type="checkbox" id="dep_check1" onchange="recordCheckTime('dep_check1', this)"> GSE is moved from the A/C<span class="check-time" id="dep_check1_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="dep_check2" onchange="recordCheckTime('dep_check2', this)"> GSE parked at the restricted area<span class="check-time" id="dep_check2_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="dep_check3" onchange="recordCheckTime('dep_check3', this)"> Towbar/tug connected correctly<span class="check-time" id="dep_check3_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="dep_check4" onchange="recordCheckTime('dep_check4', this)"> Protection covers/plugs removed<span class="check-time" id="dep_check4_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="dep_check5" onchange="recordCheckTime('dep_check5', this)"> Intakes/vents/exhaust clear from FOD<span class="check-time" id="dep_check5_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="dep_check6" onchange="recordCheckTime('dep_check6', this)"> All panels/doors closed and secured<span class="check-time" id="dep_check6_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="dep_check7" onchange="recordCheckTime('dep_check7', this)"> Check for visible A/C damage/leaks<span class="check-time" id="dep_check7_time"></span></label>
+</div>
           <div class="field"><label>Signature</label><input type="text" id="dep_signature" placeholder="Full name"></div>
         </div>
       </div>
@@ -821,14 +821,14 @@
 </div>
           <div class="checklist-label">Arrival Checklist</div>
           <div class="checklist">
-            <label class="check-item"><input type="checkbox" id="ta_check1"> Bay is clear of FOD/GSE/Contamination</label>
-            <label class="check-item"><input type="checkbox" id="ta_check2"> Adequate chocks are available</label>
-            <label class="check-item"><input type="checkbox" id="ta_check3"> Ground/fixed power ready for use</label>
-            <label class="check-item"><input type="checkbox" id="ta_check4"> Aircraft chocked correctly</label>
-            <label class="check-item"><input type="checkbox" id="ta_check5"> TRC to approach aircraft when safe</label>
-            <label class="check-item"><input type="checkbox" id="ta_check6"> FDC to release brakes when safe</label>
-            <label class="check-item"><input type="checkbox" id="ta_check7"> Check for visible A/C damage/leaks</label>
-          </div>
+  <label class="check-item"><input type="checkbox" id="ta_check1" onchange="recordCheckTime('ta_check1', this)"> Bay is clear of FOD/GSE/Contamination<span class="check-time" id="ta_check1_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="ta_check2" onchange="recordCheckTime('ta_check2', this)"> Adequate chocks are available<span class="check-time" id="ta_check2_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="ta_check3" onchange="recordCheckTime('ta_check3', this)"> Ground/fixed power ready for use<span class="check-time" id="ta_check3_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="ta_check4" onchange="recordCheckTime('ta_check4', this)"> Aircraft chocked correctly<span class="check-time" id="ta_check4_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="ta_check5" onchange="recordCheckTime('ta_check5', this)"> TRC to approach aircraft when safe<span class="check-time" id="ta_check5_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="ta_check6" onchange="recordCheckTime('ta_check6', this)"> FDC to release brakes when safe<span class="check-time" id="ta_check6_time"></span></label>
+  <label class="check-item"><input type="checkbox" id="ta_check7" onchange="recordCheckTime('ta_check7', this)"> Check for visible A/C damage/leaks<span class="check-time" id="ta_check7_time"></span></label>
+</div>
           <div class="field"><label>Signature</label><input type="text" id="ta_arrivalSignature" placeholder="Full name"></div>
         </div>
       </div>

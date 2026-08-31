@@ -115,7 +115,30 @@ function captureTime(fieldId, btnId) {
   btn.classList.add('captured');
   btn.disabled = true;
 }
+// ── CHECKLIST TIMESTAMPS ──────────────────────────────
 
+const checkTimes = {};
+
+function recordCheckTime(checkId, checkbox) {
+  if (checkbox.checked) {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const timeStr = `${hours}:${minutes}:${seconds}`;
+    checkTimes[checkId] = timeStr;
+    const display = document.getElementById(checkId + '_time');
+    if (display) display.textContent = `✓ ${hours}:${minutes}`;
+  } else {
+    delete checkTimes[checkId];
+    const display = document.getElementById(checkId + '_time');
+    if (display) display.textContent = '';
+  }
+}
+
+function getCheckTime(checkId) {
+  return checkTimes[checkId] || null;
+}
 function getTime(fieldId) {
   return capturedTimes[fieldId] || null;
 }
@@ -220,13 +243,20 @@ function collectFormData() {
 thumbs_up: getTime('thumbsUp'),
 
     // Checklist
-    check_bay_clear: document.getElementById('check1').checked,
-    check_chocks_available: document.getElementById('check2').checked,
-    check_ground_power: document.getElementById('check3').checked,
-    check_aircraft_chocked: document.getElementById('check4').checked,
-    check_trc_approach: document.getElementById('check5').checked,
-    check_fdc_brakes: document.getElementById('check6').checked,
-    check_ac_damage: document.getElementById('check7').checked,
+   check_bay_clear: document.getElementById('check1').checked,
+check1_time: getCheckTime('check1'),
+check_chocks_available: document.getElementById('check2').checked,
+check2_time: getCheckTime('check2'),
+check_ground_power: document.getElementById('check3').checked,
+check3_time: getCheckTime('check3'),
+check_aircraft_chocked: document.getElementById('check4').checked,
+check4_time: getCheckTime('check4'),
+check_trc_approach: document.getElementById('check5').checked,
+check5_time: getCheckTime('check5'),
+check_fdc_brakes: document.getElementById('check6').checked,
+check6_time: getCheckTime('check6'),
+check_ac_damage: document.getElementById('check7').checked,
+check7_time: getCheckTime('check7'),
 
     // Signatures
     inbound_signature: document.getElementById('inboundSignature').value,
@@ -504,13 +534,19 @@ doors_closed: getTime('dep_doorsClosed'),
 stairs_removed: getTime('dep_stairsRemoved'),
 atd: getTime('dep_atd'),
     check_gse_moved: document.getElementById('dep_check1').checked,
-    check_gse_parked: document.getElementById('dep_check2').checked,
-    check_towbar_connected: document.getElementById('dep_check3').checked,
-    check_covers_removed: document.getElementById('dep_check4').checked,
-    check_intakes_clear: document.getElementById('dep_check5').checked,
-    check_panels_closed: document.getElementById('dep_check6').checked,
-    check_ac_damage: document.getElementById('dep_check7').checked,
-    departure_signature: document.getElementById('dep_signature').value,
+dep_check1_time: getCheckTime('dep_check1'),
+check_gse_parked: document.getElementById('dep_check2').checked,
+dep_check2_time: getCheckTime('dep_check2'),
+check_towbar_connected: document.getElementById('dep_check3').checked,
+dep_check3_time: getCheckTime('dep_check3'),
+check_covers_removed: document.getElementById('dep_check4').checked,
+dep_check4_time: getCheckTime('dep_check4'),
+check_intakes_clear: document.getElementById('dep_check5').checked,
+dep_check5_time: getCheckTime('dep_check5'),
+check_panels_closed: document.getElementById('dep_check6').checked,
+dep_check6_time: getCheckTime('dep_check6'),
+check_ac_damage: document.getElementById('dep_check7').checked,
+dep_check7_time: getCheckTime('dep_check7'),
 
     // Additional
     comments_general: document.getElementById('dep_commentsGeneral').value,
@@ -634,13 +670,20 @@ function collectTurnaroundFormData() {
     thumbs_up: getTime('ta_thumbsUp'),
 
     // Arrival checklist
-    check_bay_clear: document.getElementById('ta_check1').checked,
-    check_chocks_available: document.getElementById('ta_check2').checked,
-    check_ground_power: document.getElementById('ta_check3').checked,
-    check_aircraft_chocked: document.getElementById('ta_check4').checked,
-    check_trc_approach: document.getElementById('ta_check5').checked,
-    check_fdc_brakes: document.getElementById('ta_check6').checked,
-    check_ac_damage: document.getElementById('ta_check7').checked,
+   check_bay_clear: document.getElementById('ta_check1').checked,
+ta_check1_time: getCheckTime('ta_check1'),
+check_chocks_available: document.getElementById('ta_check2').checked,
+ta_check2_time: getCheckTime('ta_check2'),
+check_ground_power: document.getElementById('ta_check3').checked,
+ta_check3_time: getCheckTime('ta_check3'),
+check_aircraft_chocked: document.getElementById('ta_check4').checked,
+ta_check4_time: getCheckTime('ta_check4'),
+check_trc_approach: document.getElementById('ta_check5').checked,
+ta_check5_time: getCheckTime('ta_check5'),
+check_fdc_brakes: document.getElementById('ta_check6').checked,
+ta_check6_time: getCheckTime('ta_check6'),
+check_ac_damage: document.getElementById('ta_check7').checked,
+ta_check7_time: getCheckTime('ta_check7'),
     arrival_signature: document.getElementById('ta_arrivalSignature').value,
 
     // Arrival baggage

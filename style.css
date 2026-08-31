@@ -839,4 +839,13 @@ body {
 .perf-extreme {
   background: rgba(220,38,38,0.12);
   color: var(--red);
+} 
+/* ── CHECKLIST TIMESTAMPS ────────────────────────────── */
+.check-time {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--green);
+  margin-left: 30px;
+  margin-top: 2px;
 }
