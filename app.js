@@ -185,6 +185,9 @@ function showToast(msg) {
 
 // ── NAVIGATION ────────────────────────────────────────
 function openForm(type) {
+  capturedPhotoUrl = null;
+capturedLatitude = null;
+capturedLongitude = null;
   document.getElementById('homeScreen').classList.add('hidden');
 
   // Reset captured times for this form
@@ -308,6 +311,9 @@ completed_offloading: getTime('completedOffloading'),
     comments_grooming: document.getElementById('commentsGrooming').value,
     comments_baggage: document.getElementById('commentsBaggage').value,
 
+    photo_url: capturedPhotoUrl,
+latitude: capturedLatitude,
+longitude: capturedLongitude, 
     // Metadata
     form_status: 'Submitted'
   };
@@ -556,6 +562,9 @@ dep_check7_time: getCheckTime('dep_check7'),
     comments_baggage: document.getElementById('dep_commentsBaggage').value,
     delay_comments: document.getElementById('dep_delayComments').value,
 
+    photo_url: capturedPhotoUrl,
+latitude: capturedLatitude,
+longitude: capturedLongitude,
     form_status: 'Submitted'
   };
 }
@@ -721,6 +730,9 @@ ta_check7_time: getCheckTime('ta_check7'),
     comments_grooming: document.getElementById('ta_commentsGrooming').value,
     comments_baggage: document.getElementById('ta_commentsBaggage').value,
 
+    photo_url: capturedPhotoUrl,
+latitude: capturedLatitude,
+longitude: capturedLongitude,
     form_status: 'Submitted'
   };
 }
@@ -1047,26 +1059,46 @@ function closeModal(id) {
 }
 
 // ── PHOTO ─────────────────────────────────────────────
+// ── PHOTO UPLOAD ──────────────────────────────────────
+let capturedPhotoUrl = null;
+
 function toolbarPhoto() {
   document.getElementById('toolbarPhotoInput').click();
 }
 
-function handleToolbarPhoto(input) {
+async function handleToolbarPhoto(input) {
   const file = input.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    showToast('📷 Photo attached successfully');
-    // Store photo in session
-    if (!window.attachedPhotos) window.attachedPhotos = [];
-    window.attachedPhotos.push({
-      name: file.name,
-      data: e.target.result,
-      form: currentFormType,
-      time: new Date().toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })
-    });
-  };
-  reader.readAsDataURL(file);
+
+  showToast('📷 Uploading photo...');
+
+  try {
+    const session = JSON.parse(localStorage.getItem('saa_session') || '{}');
+    const fileName = `${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+
+    const response = await fetch(
+      `${SUPABASE_URL}/storage/v1/object/ramp-photos/${fileName}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': file.type,
+          'x-upsert': 'true'
+        },
+        body: file
+      }
+    );
+
+    if (response.ok) {
+      capturedPhotoUrl = `${SUPABASE_URL}/storage/v1/object/public/ramp-photos/${fileName}`;
+      showToast('📷 Photo uploaded successfully');
+    } else {
+      showToast('Photo upload failed — try again');
+    }
+  } catch (error) {
+    console.error('Photo upload error:', error);
+    showToast('Photo upload failed — check connection');
+  }
 }
 
 // ── LOCATION ──────────────────────────────────────────
@@ -1112,10 +1144,15 @@ function toolbarLocation() {
   );
 }
 
+let capturedLatitude = null;
+let capturedLongitude = null;
+
 function copyLocation(lat, lon) {
+  capturedLatitude = parseFloat(lat);
+  capturedLongitude = parseFloat(lon);
   const text = `${lat}, ${lon}`;
   navigator.clipboard.writeText(text).then(() => {
-    showToast('📍 Coordinates copied');
+    showToast('📍 Coordinates saved and copied');
     closeModal('locationModal');
   });
 }
