@@ -839,7 +839,7 @@ function renderHistory(submissions) {
     });
 
     return `
-      <div class="history-card">
+      <div class="history-card" onclick="openSubmissionDetail(${JSON.stringify(s).replace(/"/g, '&quot;')})">
         <div class="history-card-top">
           <span class="history-flight">${s.flight_number || s.arrival_flight_number || '—'}</span>
           <span class="history-type ${typeClass}">${typeLabel}</span>
@@ -1257,4 +1257,224 @@ function getCurrentFormSections() {
     ...s,
     hasContent: s.field ? (document.getElementById(s.field)?.value || '') !== '' : false
   }));
+} 
+// ── SUBMISSION DETAIL & PDF EXPORT ───────────────────
+
+let currentSubmission = null;
+
+function openSubmissionDetail(s) {
+  currentSubmission = s;
+  const typeLabel = s.type === 'arrivals' ? 'QA Arrival' :
+                    s.type === 'departures' ? 'QA Departure' : 'Turnaround';
+  const date = new Date(s.created_at).toLocaleDateString('en-ZA', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+  const time = new Date(s.created_at).toLocaleTimeString('en-ZA', {
+    hour: '2-digit', minute: '2-digit'
+  });
+  const perf = calcPerformance(s.trc_at_parking_bay, s.thumbs_up || s.atd);
+
+  document.getElementById('detailModalTitle').textContent =
+    `${s.flight_number || s.arrival_flight_number || '—'} · ${typeLabel}`;
+
+  document.getElementById('detailModalContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div class="stat-tile"><div class="stat-tile-label">Date</div><div class="stat-tile-val">${s.flight_date || '—'}</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Bay</div><div class="stat-tile-val">${s.parking_bay || '—'}</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Aircraft</div><div class="stat-tile-val">${s.aircraft_type || '—'} ${s.registration || ''}</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Coordinator</div><div class="stat-tile-val" style="font-size:12px;">${s.coordinator_name || '—'}</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Submitted</div><div class="stat-tile-val" style="font-size:12px;">${date} ${time}</div></div>
+      <div class="stat-tile"><div class="stat-tile-label">Performance</div><div class="stat-tile-val" style="font-size:12px;">${perf ? perf.icon + ' ' + perf.label : '—'}</div></div>
+    </div>
+    ${s.photo_url ? `<div style="margin-bottom:12px;"><p style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;margin-bottom:6px;">Photo Evidence</p><img src="${s.photo_url}" style="width:100%;border-radius:12px;border:1px solid var(--line);" alt="Photo evidence"></div>` : ''}
+    ${s.latitude ? `<div class="stat-tile" style="margin-bottom:12px;"><div class="stat-tile-label">GPS Location</div><div class="stat-tile-val" style="font-size:12px;">${s.latitude}, ${s.longitude}</div></div>` : ''}
+  `;
+
+  document.getElementById('detailModal').classList.remove('hidden');
+}
+
+function exportPDF() {
+  const s = currentSubmission;
+  if (!s) return;
+
+  const typeLabel = s.type === 'arrivals' ? 'QA Arrivals' :
+                    s.type === 'departures' ? 'QA Departures' : 'Turnaround';
+  const perf = calcPerformance(s.trc_at_parking_bay, s.thumbs_up || s.atd);
+  const date = new Date(s.created_at).toLocaleDateString('en-ZA', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
+  const time = new Date(s.created_at).toLocaleTimeString('en-ZA', {
+    hour: '2-digit', minute: '2-digit'
+  });
+
+  const perfColor = perf ? (perf.label === 'On Time' ? '#159947' :
+                    perf.label === 'Light Delay' ? '#E65100' : '#DC2626') : '#65748B';
+
+  // Build checklist rows based on form type
+  let checklistHtml = '';
+  if (s.type === 'arrivals' || s.type === 'turnaround') {
+    const checks = [
+      { label: 'Bay is clear of FOD/GSE/Contamination', val: s.check_bay_clear, time: s.check1_time || s.ta_check1_time },
+      { label: 'Adequate chocks are available', val: s.check_chocks_available, time: s.check2_time || s.ta_check2_time },
+      { label: 'Ground/fixed power ready for use', val: s.check_ground_power, time: s.check3_time || s.ta_check3_time },
+      { label: 'Aircraft chocked correctly', val: s.check_aircraft_chocked, time: s.check4_time || s.ta_check4_time },
+      { label: 'TRC to approach aircraft when safe', val: s.check_trc_approach, time: s.check5_time || s.ta_check5_time },
+      { label: 'FDC to release brakes when safe', val: s.check_fdc_brakes, time: s.check6_time || s.ta_check6_time },
+      { label: 'Check for visible A/C damage/leaks', val: s.check_ac_damage, time: s.check7_time || s.ta_check7_time },
+    ];
+    checklistHtml = `
+      <h3>Arrival Checklist</h3>
+      <table>
+        <thead><tr><th>#</th><th>Item</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody>
+          ${checks.map((c, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${c.label}</td>
+              <td style="color:${c.val ? '#159947' : '#DC2626'};font-weight:700;">${c.val ? '✓ Done' : '✗ Not done'}</td>
+              <td>${c.time || '—'}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } else if (s.type === 'departures') {
+    const checks = [
+      { label: 'GSE is moved from the A/C', val: s.check_gse_moved, time: s.dep_check1_time },
+      { label: 'GSE parked at the restricted area', val: s.check_gse_parked, time: s.dep_check2_time },
+      { label: 'Towbar/tug connected correctly', val: s.check_towbar_connected, time: s.dep_check3_time },
+      { label: 'Protection covers/plugs removed', val: s.check_covers_removed, time: s.dep_check4_time },
+      { label: 'Intakes/vents/exhaust clear from FOD', val: s.check_intakes_clear, time: s.dep_check5_time },
+      { label: 'All panels/doors closed and secured', val: s.check_panels_closed, time: s.dep_check6_time },
+      { label: 'Check for visible A/C damage/leaks', val: s.check_ac_damage, time: s.dep_check7_time },
+    ];
+    checklistHtml = `
+      <h3>Departure Checklist</h3>
+      <table>
+        <thead><tr><th>#</th><th>Item</th><th>Status</th><th>Time</th></tr></thead>
+        <tbody>
+          ${checks.map((c, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td>${c.label}</td>
+              <td style="color:${c.val ? '#159947' : '#DC2626'};font-weight:700;">${c.val ? '✓ Done' : '✗ Not done'}</td>
+              <td>${c.time || '—'}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  }
+
+  // Build timestamps section
+  const timestamps = s.type === 'departures' ? [
+    { label: 'TRC at Parking Bay', val: s.trc_at_parking_bay },
+    { label: 'Flight Deck Arrive', val: s.flight_deck_arrive_onboard },
+    { label: 'Cabin Crew Arrive', val: s.cabin_crew_arrive_onboard },
+    { label: 'Fuel Bowser on Bay', val: s.fuel_bowser_on_bay },
+    { label: 'Fuelling Completed', val: s.fuelling_completed },
+    { label: 'Staff on Bay', val: s.staff_on_bay },
+    { label: 'Equipment on Bay', val: s.equipment_on_bay },
+    { label: 'OK to Board', val: s.ok_to_board },
+    { label: 'First Pax Boarded', val: s.first_passenger_boarded },
+    { label: 'Last Pax Boarded', val: s.last_passenger_boarded },
+    { label: 'Doors Closed', val: s.doors_closed },
+    { label: 'Stairs Removed', val: s.stairs_removed },
+    { label: 'ATD', val: s.atd },
+  ] : [
+    { label: 'TRC at Parking Bay', val: s.trc_at_parking_bay },
+    { label: 'Chocked Time', val: s.chocked_time },
+    { label: 'Thumbs Up', val: s.thumbs_up },
+    { label: 'Staff on Bay', val: s.staff_on_bay },
+    { label: 'Equipment on Bay', val: s.equipment_on_bay },
+    { label: 'First Bag Off', val: s.first_bag_off },
+    { label: 'Last Bag Off', val: s.last_bag_off },
+    { label: 'First Pax Off', val: s.first_passenger_off },
+    { label: 'Last Pax Off', val: s.last_passenger_off },
+    { label: 'Grooming On', val: s.grooming_on_aircraft || s.grooming_on_ac },
+    { label: 'Grooming Off', val: s.grooming_off_aircraft || s.grooming_off_ac },
+  ];
+
+  const report = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SAA Ramp QA Report — ${s.flight_number || s.arrival_flight_number}</title>
+  <style>
+    @page { size: A4; margin: 12mm; }
+    body { font-family: "Segoe UI", Arial, sans-serif; color: #344054; margin: 0; background: #fff; font-size: 12px; }
+    .header { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 3px solid #E8B84B; }
+    .header-text .title { color: #0D2B5E; font-weight: 900; font-size: 18px; }
+    .header-text .sub { color: #65748B; font-size: 11px; margin-top: 3px; }
+    .perf-band { padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-weight: 700; color: white; background: ${perfColor}; }
+    h3 { color: #0D2B5E; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 6px; border-bottom: 1px solid #DBE5F1; padding-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; }
+    th { background: #0D2B5E; color: white; padding: 6px 8px; text-align: left; font-weight: 700; }
+    td { padding: 5px 8px; border-bottom: 1px solid #DBE5F1; }
+    tr:nth-child(even) td { background: #F4F7FB; }
+    .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .info-card { background: #F4F7FB; border-radius: 8px; padding: 8px 10px; }
+    .info-label { font-size: 10px; color: #65748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; }
+    .info-val { font-size: 13px; font-weight: 700; color: #0D2B5E; }
+    .photo { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 12px; }
+    .footer { margin-top: 16px; padding-top: 8px; border-top: 1px solid #DBE5F1; font-size: 10px; color: #65748B; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-text">
+      <div class="title">SOUTH AFRICAN AIRWAYS — RAMP QA REPORT</div>
+      <div class="sub">${typeLabel} · Generated ${date} at ${time}</div>
+    </div>
+  </div>
+
+  <div class="perf-band">
+    ${perf ? `${perf.icon} ${perf.label} — ${perf.mins} minutes turnaround` : 'Performance not calculated'}
+  </div>
+
+  <h3>Flight Information</h3>
+  <div class="info-grid">
+    <div class="info-card"><div class="info-label">Flight</div><div class="info-val">${s.flight_number || s.arrival_flight_number || '—'}</div></div>
+    <div class="info-card"><div class="info-label">Date</div><div class="info-val">${s.flight_date || '—'}</div></div>
+    <div class="info-card"><div class="info-label">Bay</div><div class="info-val">${s.parking_bay || '—'}</div></div>
+    <div class="info-card"><div class="info-label">Aircraft</div><div class="info-val">${s.aircraft_type || '—'}</div></div>
+    <div class="info-card"><div class="info-label">Registration</div><div class="info-val">${s.registration || '—'}</div></div>
+    <div class="info-card"><div class="info-label">Coordinator</div><div class="info-val">${s.coordinator_name || '—'}</div></div>
+  </div>
+
+  <h3>Operational Timestamps</h3>
+  <table>
+    <thead><tr><th>Milestone</th><th>Time</th></tr></thead>
+    <tbody>
+      ${timestamps.map(t => `
+        <tr>
+          <td>${t.label}</td>
+          <td style="font-weight:700;color:${t.val ? '#0D2B5E' : '#9AA5B4'}">${t.val || '—'}</td>
+        </tr>`).join('')}
+    </tbody>
+  </table>
+
+  ${checklistHtml}
+
+  ${s.photo_url ? `<h3>Photo Evidence</h3><img src="${s.photo_url}" class="photo" alt="Photo evidence">` : ''}
+
+  ${s.latitude ? `<h3>GPS Location</h3><p style="font-weight:700;color:#0D2B5E;">${s.latitude}, ${s.longitude}</p>` : ''}
+
+  ${(s.comments_general || s.comments_baggage || s.comments_passengers || s.delay_comments) ? `
+  <h3>Comments</h3>
+  <table>
+    <tbody>
+      ${s.comments_general ? `<tr><td style="font-weight:700;width:120px;">General</td><td>${s.comments_general}</td></tr>` : ''}
+      ${s.comments_baggage ? `<tr><td style="font-weight:700;">Baggage</td><td>${s.comments_baggage}</td></tr>` : ''}
+      ${s.comments_passengers ? `<tr><td style="font-weight:700;">Passengers</td><td>${s.comments_passengers}</td></tr>` : ''}
+      ${s.delay_comments ? `<tr><td style="font-weight:700;">Delay Reasons</td><td>${s.delay_comments}</td></tr>` : ''}
+    </tbody>
+  </table>` : ''}
+
+  <div class="footer">South African Airways SOC Ltd · Ramp Operations · Ground Services Quality Assurance</div>
+</body>
+</html>`;
+
+  const w = window.open('', '_blank');
+  w.document.open();
+  w.document.write(report);
+  w.document.close();
+  w.focus();
+  setTimeout(() => w.print(), 500);
 }

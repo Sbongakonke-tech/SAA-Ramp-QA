@@ -1052,6 +1052,16 @@
     <button class="modal-close" onclick="closeModal('locationModal')">Close</button>
   </div>
 </div>
+<!-- SUBMISSION DETAIL MODAL -->
+<div class="modal hidden" id="detailModal">
+  <div class="modal-overlay" onclick="closeModal('detailModal')"></div>
+  <div class="modal-card" style="max-height:80vh;">
+    <div class="modal-title" id="detailModalTitle">Submission Detail</div>
+    <div id="detailModalContent" style="padding:8px 0;"></div>
+    <button class="submit-btn" onclick="exportPDF()" style="margin-top:12px;">📄 Export PDF</button>
+    <button class="modal-close" onclick="closeModal('detailModal')">Close</button>
+  </div>
+</div>
   <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
