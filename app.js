@@ -1471,6 +1471,20 @@ function exportPDF() {
 </body>
 </html>`;
 
+ const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+if (isMobile) {
+  const blob = new Blob([report], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `SAA_Ramp_QA_${s.flight_number || s.arrival_flight_number || 'report'}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📄 Report downloaded');
+} else {
   const w = window.open('', '_blank');
   w.document.open();
   w.document.write(report);
@@ -1478,3 +1492,4 @@ function exportPDF() {
   w.focus();
   setTimeout(() => w.print(), 500);
 }
+} 
