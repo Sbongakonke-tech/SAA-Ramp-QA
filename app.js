@@ -1493,4 +1493,5 @@ if (isMobile) {
   w.document.close();
   w.focus();
   setTimeout(() => w.print(), 500);
+} 
 }
