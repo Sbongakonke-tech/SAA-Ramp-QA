@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRH Monthly Monitoring Checklist</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+--navy: #0B1F3A;
+--navy-2: #14335C;
+--gold: #C89B3C;
+--gold-dim: #E4C57A;
+--bg: #F6F5F1;
+--surface: #FFFFFF;
+--line: #DEDAD0;
+--ink: #1B2430;
+--ink-dim: #5B6472;
+--ok: #2F7A4F;
+--ok-bg: #EAF4EE;
+--bad: #B3402A;
+--bad-bg: #FBEDE9;
+--radius: 3px;
+}
+* { box-sizing: border-box; }
+body {
+margin: 0;
+background: var(--bg);
+color: var(--ink);
+font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+-webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 0 64px; }
+
+header.masthead {
+background: var(--navy);
+color: #fff;
+padding: 28px 24px 22px;
+border-bottom: 3px solid var(--gold);
+position: relative;
+}
+.brand-row { display: flex; align-items: center; gap: 14px; }
+.logo-slot {
+width: 46px; height: 46px; flex: none;
+border-radius: 50%;
+background: var(--navy-2);
+border: 1px solid rgba(255,255,255,0.25);
+display: flex; align-items: center; justify-content: center;
+overflow: hidden;
+}
+.logo-slot img { width: 100%; height: 100%; object-fit: contain; }
+.logo-slot svg { width: 24px; height: 24px; }
+.brand-name { font-size: 13px; letter-spacing: 0.04em; color: var(--gold-dim); font-weight: 600; margin: 0 0 2px; }
+.form-title { font-size: 21px; font-weight: 700; margin: 0; line-height: 1.25; }
+.meta-row {
+margin-top: 12px; font-size: 12.5px; color: rgba(255,255,255,0.72);
+display: flex; flex-wrap: wrap; gap: 4px 14px;
+font-family: "IBM Plex Mono", monospace;
+}
+.logo-upload-btn {
+position: absolute; top: 10px; right: 12px;
+background: none; border: 1px solid rgba(255,255,255,0.3);
+color: rgba(255,255,255,0.75); font-size: 11px; padding: 4px 8px;
+border-radius: var(--radius); cursor: pointer; font-family: inherit;
+}
+.logo-upload-btn:hover { border-color: var(--gold); color: var(--gold-dim); }
+
+.card { background: var(--surface); margin: 20px 20px 0; border: 1px solid var(--line); border-radius: var(--radius); }
+.card-head { padding: 16px 20px 14px; border-bottom: 1px solid var(--line); }
+.card-head h2 { font-size: 15px; margin: 0 0 3px; font-weight: 600; }
+.card-head .ref { font-size: 12px; color: var(--ink-dim); font-family: "IBM Plex Mono", monospace; }
+.card-body { padding: 6px 20px 18px; }
+
+.field { margin: 14px 0; }
+.field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-dim); margin-bottom: 6px; }
+.field input[type="text"], .field input[type="date"] {
+width: 100%; padding: 9px 10px; font-size: 14.5px;
+border: 1px solid var(--line); border-radius: var(--radius);
+background: var(--bg); color: var(--ink); font-family: inherit;
+}
+.field input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+.section-points {
+font-size: 11px; font-weight: 600; color: var(--navy-2);
+background: var(--gold-dim); padding: 2px 8px; border-radius: 20px; float: right;
+}
+
+.measure { padding: 14px 0; border-top: 1px solid var(--line); }
+.measure:first-of-type { border-top: none; }
+.measure p { margin: 0 0 10px; font-size: 14px; line-height: 1.45; }
+.measure .idx { color: var(--ink-dim); font-family: "IBM Plex Mono", monospace; font-size: 12px; margin-right: 6px; }
+.pending-note { font-size: 11.5px; color: var(--gold); font-style: italic; display: block; margin-top: -6px; margin-bottom: 10px; }
+
+.compliance-toggle { display: flex; gap: 8px; }
+.compliance-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.compliance-toggle label {
+flex: 1; text-align: center; padding: 9px 8px;
+border: 1px solid var(--line); border-radius: var(--radius);
+font-size: 13px; font-weight: 600; cursor: pointer; color: var(--ink-dim);
+margin: 0; transition: border-color .12s, background .12s, color .12s;
+}
+.compliance-toggle input:checked + label.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
+.compliance-toggle input:checked + label.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
+.compliance-toggle input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+.attach-box {
+border: 1px dashed var(--line); border-radius: var(--radius);
+padding: 16px; text-align: center; font-size: 13px; color: var(--ink-dim); cursor: pointer; display: block;
+}
+.attach-box:hover { border-color: var(--gold); }
+.attach-box input { display: none; }
+.attach-list { margin-top: 10px; font-size: 13px; }
+.attach-item {
+display: flex; align-items: center; justify-content: space-between;
+padding: 7px 10px; background: var(--bg); border-radius: var(--radius); margin-top: 6px;
+}
+.attach-item button { background: none; border: none; color: var(--bad); cursor: pointer; font-size: 12px; font-family: inherit; }
+
+.submit-bar { margin: 24px 20px 0; }
+.submit-btn {
+width: 100%; padding: 14px; background: var(--navy); color: #fff; border: none;
+border-radius: var(--radius); font-size: 14.5px; font-weight: 600; font-family: inherit;
+cursor: pointer; letter-spacing: 0.01em;
+}
+.submit-btn:hover { background: var(--navy-2); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.status-msg { text-align: center; font-size: 12.5px; margin-top: 10px; color: var(--ink-dim); min-height: 16px; }
+.status-msg.err { color: var(--bad); }
+.status-msg.ok { color: var(--ok); }
+
+.log-head { display: flex; align-items: baseline; justify-content: space-between; margin: 34px 20px 10px; }
+.log-head h3 { font-size: 13px; color: var(--ink-dim); font-weight: 600; margin: 0; }
+.log-item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); margin: 0 20px 8px; padding: 12px 16px; font-size: 13px; }
+.log-item .top { display: flex; justify-content: space-between; font-weight: 600; }
+.log-item .sub { color: var(--ink-dim); margin-top: 3px; font-size: 12px; }
+.log-item .score { font-family: "IBM Plex Mono", monospace; }
+.log-empty { margin: 0 20px; font-size: 13px; color: var(--ink-dim); padding: 14px 16px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+<button class="logo-upload-btn" id="logoUploadBtn" title="Set official logo">Set logo</button>
+<input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none">
+<div class="brand-row">
+<div class="logo-slot" id="logoSlot">
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 16L22 12L2 8V16Z" stroke="#C89B3C" stroke-width="1.4" stroke-linejoin="round"/>
+</svg>
+</div>
+<div>
+<p class="brand-name">SOUTH AFRICAN AIRWAYS</p>
+<h1 class="form-title">GRH Monthly Monitoring Checklist</h1>
+</div>
+</div>
+<div class="meta-row">
+<span>Operations</span>
+<span>Version 2/26</span>
+<span>Effective 01 Jun 2026</span>
+</div>
+</header>
+
+<form id="checklistForm">
+<div class="card">
+<div class="card-head"><h2>SAA representative</h2></div>
+<div class="card-body">
+<div class="field">
+<label for="auditorName">Name (full name and surname)</label>
+<input type="text" id="auditorName" required autocomplete="off">
+</div>
+<div class="field">
+<label for="station">Station</label>
+<input type="text" id="station" required autocomplete="off">
+</div>
+<div class="field">
+<label for="dateCaptured">Date of capturing</label>
+<input type="date" id="dateCaptured" required>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-head">
+<span class="section-points">3 points</span>
+<h2>1. Organization and management</h2>
+<div class="ref">Ref: Ramp Handling Manual — Section 1</div>
+</div>
+<div class="card-body" id="measuresContainer"></div>
+</div>
+
+<div class="card">
+<div class="card-head">
+<h2>Attachment</h2>
+<div class="ref">Optional supporting evidence</div>
+</div>
+<div class="card-body">
+<label class="attach-box" id="attachBox">
+<input type="file" id="attachInput" multiple accept="image/*,.pdf,.doc,.docx">
+<span id="attachLabel">Tap to add a photo or document</span>
+</label>
+<div class="attach-list" id="attachList"></div>
+</div>
+</div>
+
+<div class="submit-bar">
+<button type="submit" class="submit-btn" id="submitBtn">Submit checklist</button>
+<div class="status-msg" id="statusMsg"></div>
+</div>
+</form>
+
+<div class="log-head"><h3>Recent submissions</h3></div>
+<div id="logContainer"><div class="log-empty">Loading…</div></div>
+
+</div>
+
+<script>
+// ---- Supabase project config ----
+const SUPABASE_URL = 'https://fokealhvpgnjubfhknix.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZva2VhbGh2cGduanViZmhrbml4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5NDIxOTcsImV4cCI6MjEwMjUxODE5N30.vxpgMApNNsDPKKR3Vt1e_OYeuv5tjg8_yb9hhEe6CRk';
+const BUCKET = 'grh-attachments';
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const MEASURES = [
+{ id: 'm1', text: 'Are the latest versions of the approved Manuals being used?' },
+{ id: 'm2', text: 'Are the employees who provide services trained to provide such services?' },
+{ id: 'm3', text: 'Third measure for this section — pending confirmation from the source form.', pending: true },
+];
+
+const measuresContainer = document.getElementById('measuresContainer');
+MEASURES.forEach((m, i) => {
+const div = document.createElement('div');
+div.className = 'measure';
+div.innerHTML = `
+<p><span class="idx">${i + 1}.</span>${m.text}</p>
+${m.pending ? '<span class="pending-note">Placeholder text — replace once the full form is confirmed.</span>' : ''}
+<div class="compliance-toggle">
+<input type="radio" name="${m.id}" id="${m.id}-ok" value="compliant" required>
+<label class="ok" for="${m.id}-ok">Compliance</label>
+<input type="radio" name="${m.id}" id="${m.id}-bad" value="non_compliant">
+<label class="bad" for="${m.id}-bad">Non-Compliance</label>
+</div>
+`;
+measuresContainer.appendChild(div);
+});
+
+let pendingFiles = [];
+
+async function init() {
+await loadBranding();
+await loadRecent();
+}
+init();
+
+// ---- Branding (logo) ----
+async function loadBranding() {
+try {
+const { data, error } = await sb.from('grh_checklist_branding').select('logo_url').eq('id', 1).maybeSingle();
+if (!error && data && data.logo_url) {
+document.getElementById('logoSlot').innerHTML = `<img src="${data.logo_url}" alt="SAA logo">`;
+}
+} catch (e) { /* no branding set yet */ }
+}
+
+document.getElementById('logoUploadBtn').addEventListener('click', () => {
+document.getElementById('logoFileInput').click();
+});
+document.getElementById('logoFileInput').addEventListener('change', async (e) => {
+const file = e.target.files[0];
+if (!file) return;
+try {
+const path = `logo/${Date.now()}-${file.name}`;
+const { error: upErr } = await sb.storage.from(BUCKET).upload(path, file, { upsert: true });
+if (upErr) throw upErr;
+const { data: pub } = sb.storage.from(BUCKET).getPublicUrl(path);
+await sb.from('grh_checklist_branding').upsert({ id: 1, logo_url: pub.publicUrl, updated_at: new Date().toISOString() });
+document.getElementById('logoSlot').innerHTML = `<img src="${pub.publicUrl}" alt="SAA logo">`;
+} catch (err) {
+console.error('Logo upload failed', err);
+alert('Logo upload failed — check the browser console for details.');
+}
+});
+
+// ---- Attachments ----
+const attachInput = document.getElementById('attachInput');
+const attachList = document.getElementById('attachList');
+attachInput.addEventListener('change', () => {
+pendingFiles = pendingFiles.concat(Array.from(attachInput.files));
+renderAttachList();
+attachInput.value = '';
+});
+function renderAttachList() {
+attachList.innerHTML = '';
+pendingFiles.forEach((f, idx) => {
+const row = document.createElement('div');
+row.className = 'attach-item';
+row.innerHTML = `<span>${f.name}</span>`;
+const btn = document.createElement('button');
+btn.type = 'button';
+btn.textContent = 'Remove';
+btn.addEventListener('click', () => {
+pendingFiles.splice(idx, 1);
+renderAttachList();
+});
+row.appendChild(btn);
+attachList.appendChild(row);
+});
+}
+
+// ---- Submit ----
+const form = document.getElementById('checklistForm');
+const statusMsg = document.getElementById('statusMsg');
+const submitBtn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', async (e) => {
+e.preventDefault();
+submitBtn.disabled = true;
+statusMsg.textContent = 'Submitting…';
+statusMsg.className = 'status-msg';
+
+const items = MEASURES.map(m => ({
+text: m.text,
+compliance: form.querySelector(`input[name="${m.id}"]:checked`)?.value || null,
+}));
+
+try {
+const uploadedAttachments = [];
+for (const file of pendingFiles) {
+const path = `submissions/${Date.now()}-${file.name}`;
+const { error: upErr } = await sb.storage.from(BUCKET).upload(path, file);
+if (upErr) throw upErr;
+const { data: pub } = sb.storage.from(BUCKET).getPublicUrl(path);
+uploadedAttachments.push({ name: file.name, url: pub.publicUrl });
+}
+
+const { error: insErr } = await sb.from('grh_checklist_submissions').insert({
+auditor_name: document.getElementById('auditorName').value,
+station: document.getElementById('station').value,
+date_captured: document.getElementById('dateCaptured').value,
+section_name: 'Organization and Management',
+manual_ref: 'Ramp Handling Manual — Section 1',
+items,
+attachments: uploadedAttachments,
+});
+if (insErr) throw insErr;
+
+statusMsg.textContent = 'Checklist submitted.';
+statusMsg.className = 'status-msg ok';
+form.reset();
+pendingFiles = [];
+renderAttachList();
+loadRecent();
+} catch (err) {
+console.error(err);
+statusMsg.textContent = 'Could not submit — please try again.';
+statusMsg.className = 'status-msg err';
+} finally {
+submitBtn.disabled = false;
+}
+});
+
+// ---- Recent submissions ----
+async function loadRecent() {
+const container = document.getElementById('logContainer');
+try {
+const { data, error } = await sb
+.from('grh_checklist_submissions')
+.select('*')
+.order('created_at', { ascending: false })
+.limit(10);
+if (error) throw error;
+if (!data || data.length === 0) {
+container.innerHTML = '<div class="log-empty">No submissions yet.</div>';
+return;
+}
+container.innerHTML = '';
+data.forEach(d => {
+const items = d.items || [];
+const compliant = items.filter(i => i.compliance === 'compliant').length;
+const total = items.length;
+const date = d.date_captured || (d.created_at ? d.created_at.slice(0, 10) : '—');
+const attachCount = (d.attachments || []).length;
+const row = document.createElement('div');
+row.className = 'log-item';
+row.innerHTML = `
+<div class="top">
+<span>${escapeHtml(d.station || '—')} · ${escapeHtml(d.auditor_name || '—')}</span>
+<span class="score">${compliant}/${total}</span>
+</div>
+<div class="sub">${escapeHtml(d.section_name || '')} · ${date}${attachCount ? ' · 📎 ' + attachCount : ''}</div>
+`;
+container.appendChild(row);
+});
+} catch (e) {
+console.error(e);
+container.innerHTML = '<div class="log-empty">Could not load submissions. Check the setup steps.</div>';
+}
+}
+
+function escapeHtml(s) {
+const div = document.createElement('div');
+div.textContent = s;
+return div.innerHTML;
+}
+</script>
+</body>
+</html>
