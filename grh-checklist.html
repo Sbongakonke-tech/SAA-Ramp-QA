@@ -154,12 +154,71 @@ cursor: pointer; letter-spacing: 0.01em;
 .log-item .sub { color: var(--ink-dim); margin-top: 3px; font-size: 12px; }
 .log-item .score { font-family: "IBM Plex Mono", monospace; }
 .log-empty { margin: 0 20px; font-size: 13px; color: var(--ink-dim); padding: 14px 16px; }
+
+/* ---- Auth gate ---- */
+.auth-screen {
+max-width: 380px; margin: 80px auto; padding: 0 20px;
+}
+.auth-card {
+background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+padding: 28px 24px;
+}
+.auth-card h2 { font-size: 17px; margin: 0 0 4px; }
+.auth-card p.sub { font-size: 13px; color: var(--ink-dim); margin: 0 0 20px; }
+.auth-btn {
+width: 100%; padding: 12px; background: var(--navy); color: #fff; border: none;
+border-radius: var(--radius); font-size: 14px; font-weight: 600; font-family: inherit;
+cursor: pointer; margin-top: 6px;
+}
+.auth-btn:hover { background: var(--navy-2); }
+.auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.signout-btn {
+position: absolute; top: 10px; right: 12px;
+background: none; border: 1px solid rgba(255,255,255,0.3);
+color: rgba(255,255,255,0.75); font-size: 11px; padding: 4px 8px;
+border-radius: var(--radius); cursor: pointer; font-family: inherit;
+}
+.signout-btn:hover { border-color: var(--gold); color: var(--gold-dim); }
+.denied-card {
+text-align: center;
+}
+.denied-card .icon { font-size: 32px; margin-bottom: 10px; }
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<div class="auth-screen" id="authScreen">
+<div class="auth-card">
+<h2>GRH Checklist — Sign in</h2>
+<p class="sub">This section is restricted to managers.</p>
+<form id="loginForm">
+<div class="field">
+<label for="loginEmail">Email</label>
+<input type="email" id="loginEmail" required autocomplete="username">
+</div>
+<div class="field">
+<label for="loginPassword">Password</label>
+<input type="password" id="loginPassword" required autocomplete="current-password">
+</div>
+<button type="submit" class="auth-btn" id="loginBtn">Sign in</button>
+<div class="status-msg" id="loginStatus"></div>
+</form>
+</div>
+</div>
+
+<div class="auth-screen" id="deniedScreen" style="display:none;">
+<div class="auth-card denied-card">
+<div class="icon">🔒</div>
+<h2>Managers only</h2>
+<p class="sub">Your account (<span id="deniedEmail"></span>) doesn't have manager access to this section.</p>
+<button class="auth-btn" id="deniedSignOutBtn">Sign out</button>
+</div>
+</div>
+
+<div class="wrap" id="appContent" style="display:none;">
 
 <header class="masthead">
+<button class="signout-btn" id="signOutBtn" title="Sign out" style="right:82px;">Sign out</button>
 <button class="logo-upload-btn" id="logoUploadBtn" title="Set official logo">Set logo</button>
 <input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none">
 <div class="brand-row">
@@ -291,11 +350,81 @@ textarea.value = '';
 
 let pendingFiles = [];
 
+// ---- Auth gate ----
+const authScreen = document.getElementById('authScreen');
+const deniedScreen = document.getElementById('deniedScreen');
+const appContent = document.getElementById('appContent');
+
+function showAuthScreen() {
+authScreen.style.display = 'block';
+deniedScreen.style.display = 'none';
+appContent.style.display = 'none';
+}
+function showDeniedScreen(email) {
+document.getElementById('deniedEmail').textContent = email || '';
+authScreen.style.display = 'none';
+deniedScreen.style.display = 'block';
+appContent.style.display = 'none';
+}
+function showApp() {
+authScreen.style.display = 'none';
+deniedScreen.style.display = 'none';
+appContent.style.display = 'block';
+init();
+}
+
+async function checkAccess() {
+const { data: { session } } = await sb.auth.getSession();
+if (!session) {
+showAuthScreen();
+return;
+}
+const { data: profile, error } = await sb
+.from('profiles')
+.select('role')
+.eq('id', session.user.id)
+.maybeSingle();
+if (error || !profile || profile.role !== 'manager') {
+showDeniedScreen(session.user.email);
+return;
+}
+showApp();
+}
+checkAccess();
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+e.preventDefault();
+const btn = document.getElementById('loginBtn');
+const status = document.getElementById('loginStatus');
+btn.disabled = true;
+status.textContent = 'Signing in…';
+status.className = 'status-msg';
+const { error } = await sb.auth.signInWithPassword({
+email: document.getElementById('loginEmail').value,
+password: document.getElementById('loginPassword').value,
+});
+if (error) {
+status.textContent = 'Incorrect email or password.';
+status.className = 'status-msg err';
+btn.disabled = false;
+return;
+}
+status.textContent = '';
+await checkAccess();
+btn.disabled = false;
+});
+
+async function signOut() {
+await sb.auth.signOut();
+showAuthScreen();
+}
+document.getElementById('signOutBtn').addEventListener('click', signOut);
+document.getElementById('deniedSignOutBtn').addEventListener('click', signOut);
+
 async function init() {
 await loadBranding();
 await loadRecent();
 }
-init();
 
 // ---- Branding (logo) ----
 async function loadBranding() {
@@ -455,3 +584,4 @@ return div.innerHTML;
 </script>
 </body>
 </html>
+
