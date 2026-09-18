@@ -106,6 +106,22 @@ margin: 0; transition: border-color .12s, background .12s, color .12s;
 .compliance-toggle input:checked + label.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
 .compliance-toggle input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 1px; }
 
+.field textarea {
+width: 100%; padding: 9px 10px; font-size: 14px;
+border: 1px solid var(--line); border-radius: var(--radius);
+background: var(--bg); color: var(--ink); font-family: inherit; resize: vertical;
+}
+.corrective-action {
+margin-top: 10px; padding: 10px 12px;
+background: var(--bad-bg); border: 1px solid var(--bad); border-radius: var(--radius);
+}
+.corrective-action label { display: block; font-size: 12px; font-weight: 600; color: var(--bad); margin-bottom: 6px; }
+.corrective-action textarea {
+width: 100%; padding: 9px 10px; font-size: 13.5px;
+border: 1px solid var(--line); border-radius: var(--radius);
+background: var(--surface); color: var(--ink); font-family: inherit; resize: vertical;
+}
+
 .attach-box {
 border: 1px dashed var(--line); border-radius: var(--radius);
 padding: 16px; text-align: center; font-size: 13px; color: var(--ink-dim); cursor: pointer; display: block;
@@ -189,7 +205,13 @@ cursor: pointer; letter-spacing: 0.01em;
 <h2>1. Organization and management</h2>
 <div class="ref">Ref: Ramp Handling Manual — Section 1</div>
 </div>
-<div class="card-body" id="measuresContainer"></div>
+<div class="card-body">
+<div id="measuresContainer"></div>
+<div class="field" style="margin-top:18px;">
+<label for="sectionNotes">Notes</label>
+<textarea id="sectionNotes" rows="3" placeholder="Optional notes for this section"></textarea>
+</div>
+</div>
 </div>
 
 <div class="card">
@@ -244,8 +266,27 @@ ${m.pending ? '<span class="pending-note">Placeholder text — replace once the 
 <input type="radio" name="${m.id}" id="${m.id}-bad" value="non_compliant">
 <label class="bad" for="${m.id}-bad">Non-Compliance</label>
 </div>
+<div class="corrective-action" id="${m.id}-corrective" style="display:none;">
+<label for="${m.id}-corrective-text">Corrective action</label>
+<textarea id="${m.id}-corrective-text" rows="2" placeholder="What corrective action is being taken?"></textarea>
+</div>
 `;
 measuresContainer.appendChild(div);
+
+div.querySelectorAll(`input[name="${m.id}"]`).forEach(input => {
+input.addEventListener('change', () => {
+const correctiveBox = div.querySelector(`#${m.id}-corrective`);
+const textarea = div.querySelector(`#${m.id}-corrective-text`);
+if (input.checked && input.value === 'non_compliant') {
+correctiveBox.style.display = 'block';
+textarea.setAttribute('required', 'required');
+} else if (input.checked && input.value === 'compliant') {
+correctiveBox.style.display = 'none';
+textarea.removeAttribute('required');
+textarea.value = '';
+}
+});
+});
 });
 
 let pendingFiles = [];
@@ -322,10 +363,13 @@ submitBtn.disabled = true;
 statusMsg.textContent = 'Submitting…';
 statusMsg.className = 'status-msg';
 
-const items = MEASURES.map(m => ({
-text: m.text,
-compliance: form.querySelector(`input[name="${m.id}"]:checked`)?.value || null,
-}));
+const items = MEASURES.map(m => {
+const compliance = form.querySelector(`input[name="${m.id}"]:checked`)?.value || null;
+const correctiveAction = compliance === 'non_compliant'
+? (document.getElementById(`${m.id}-corrective-text`)?.value || '')
+: null;
+return { text: m.text, compliance, correctiveAction };
+});
 
 try {
 const uploadedAttachments = [];
@@ -344,6 +388,7 @@ date_captured: document.getElementById('dateCaptured').value,
 section_name: 'Organization and Management',
 manual_ref: 'Ramp Handling Manual — Section 1',
 items,
+notes: document.getElementById('sectionNotes').value || null,
 attachments: uploadedAttachments,
 });
 if (insErr) throw insErr;
@@ -386,10 +431,11 @@ const date = d.date_captured || (d.created_at ? d.created_at.slice(0, 10) : '—
 const attachCount = (d.attachments || []).length;
 const row = document.createElement('div');
 row.className = 'log-item';
+const scoreColor = compliant < total ? 'var(--bad)' : 'var(--ok)';
 row.innerHTML = `
 <div class="top">
 <span>${escapeHtml(d.station || '—')} · ${escapeHtml(d.auditor_name || '—')}</span>
-<span class="score">${compliant}/${total}</span>
+<span class="score" style="color:${scoreColor}">${compliant}/${total}</span>
 </div>
 <div class="sub">${escapeHtml(d.section_name || '')} · ${date}${attachCount ? ' · 📎 ' + attachCount : ''}</div>
 `;
