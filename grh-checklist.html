@@ -60,13 +60,13 @@ margin-top: 12px; font-size: 12.5px; color: rgba(255,255,255,0.72);
 display: flex; flex-wrap: wrap; gap: 4px 14px;
 font-family: "IBM Plex Mono", monospace;
 }
-.logo-upload-btn {
+.signout-btn {
 position: absolute; top: 10px; right: 12px;
 background: none; border: 1px solid rgba(255,255,255,0.3);
 color: rgba(255,255,255,0.75); font-size: 11px; padding: 4px 8px;
 border-radius: var(--radius); cursor: pointer; font-family: inherit;
 }
-.logo-upload-btn:hover { border-color: var(--gold); color: var(--gold-dim); }
+.signout-btn:hover { border-color: var(--gold); color: var(--gold-dim); }
 
 .card { background: var(--surface); margin: 20px 20px 0; border: 1px solid var(--line); border-radius: var(--radius); }
 .card-head { padding: 16px 20px 14px; border-bottom: 1px solid var(--line); }
@@ -82,6 +82,11 @@ border: 1px solid var(--line); border-radius: var(--radius);
 background: var(--bg); color: var(--ink); font-family: inherit;
 }
 .field input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.field textarea {
+width: 100%; padding: 9px 10px; font-size: 14px;
+border: 1px solid var(--line); border-radius: var(--radius);
+background: var(--bg); color: var(--ink); font-family: inherit; resize: vertical;
+}
 
 .section-points {
 font-size: 11px; font-weight: 600; color: var(--navy-2);
@@ -106,11 +111,6 @@ margin: 0; transition: border-color .12s, background .12s, color .12s;
 .compliance-toggle input:checked + label.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
 .compliance-toggle input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 1px; }
 
-.field textarea {
-width: 100%; padding: 9px 10px; font-size: 14px;
-border: 1px solid var(--line); border-radius: var(--radius);
-background: var(--bg); color: var(--ink); font-family: inherit; resize: vertical;
-}
 .corrective-action {
 margin-top: 10px; padding: 10px 12px;
 background: var(--bad-bg); border: 1px solid var(--bad); border-radius: var(--radius);
@@ -155,14 +155,15 @@ cursor: pointer; letter-spacing: 0.01em;
 .log-item .score { font-family: "IBM Plex Mono", monospace; }
 .log-empty { margin: 0 20px; font-size: 13px; color: var(--ink-dim); padding: 14px 16px; }
 
+.gap-note {
+margin: 20px 20px 0; padding: 12px 16px;
+background: var(--gold-dim); border-radius: var(--radius);
+font-size: 12.5px; color: var(--navy);
+}
+
 /* ---- Auth gate ---- */
-.auth-screen {
-max-width: 380px; margin: 80px auto; padding: 0 20px;
-}
-.auth-card {
-background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-padding: 28px 24px;
-}
+.auth-screen { max-width: 380px; margin: 80px auto; padding: 0 20px; }
+.auth-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 24px; }
 .auth-card h2 { font-size: 17px; margin: 0 0 4px; }
 .auth-card p.sub { font-size: 13px; color: var(--ink-dim); margin: 0 0 20px; }
 .auth-btn {
@@ -172,16 +173,7 @@ cursor: pointer; margin-top: 6px;
 }
 .auth-btn:hover { background: var(--navy-2); }
 .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.signout-btn {
-position: absolute; top: 10px; right: 12px;
-background: none; border: 1px solid rgba(255,255,255,0.3);
-color: rgba(255,255,255,0.75); font-size: 11px; padding: 4px 8px;
-border-radius: var(--radius); cursor: pointer; font-family: inherit;
-}
-.signout-btn:hover { border-color: var(--gold); color: var(--gold-dim); }
-.denied-card {
-text-align: center;
-}
+.denied-card { text-align: center; }
 .denied-card .icon { font-size: 32px; margin-bottom: 10px; }
 </style>
 </head>
@@ -218,9 +210,7 @@ text-align: center;
 <div class="wrap" id="appContent" style="display:none;">
 
 <header class="masthead">
-<button class="signout-btn" id="signOutBtn" title="Sign out" style="right:82px;">Sign out</button>
-<button class="logo-upload-btn" id="logoUploadBtn" title="Set official logo">Set logo</button>
-<input type="file" id="logoFileInput" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none">
+<button class="signout-btn" id="signOutBtn" title="Sign out">Sign out</button>
 <div class="brand-row">
 <div class="logo-slot" id="logoSlot">
 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -258,30 +248,20 @@ text-align: center;
 </div>
 </div>
 
-<div class="card">
-<div class="card-head">
-<span class="section-points">3 points</span>
-<h2>1. Organization and management</h2>
-<div class="ref">Ref: Ramp Handling Manual — Section 1</div>
-</div>
-<div class="card-body">
-<div id="measuresContainer"></div>
-<div class="field" style="margin-top:18px;">
-<label for="sectionNotes">Notes</label>
-<textarea id="sectionNotes" rows="3" placeholder="Optional notes for this section"></textarea>
-</div>
-</div>
-</div>
+<div class="gap-note">Note: the source form has a section between "Organization and Management" and "Ramp Handling Equipment" that wasn't captured yet — it isn't included below. Send its content whenever you have it and it'll be added.</div>
+
+<div id="sectionsContainer"></div>
 
 <div class="card">
-<div class="card-head">
-<h2>Attachment</h2>
-<div class="ref">Optional supporting evidence</div>
-</div>
+<div class="card-head"><h2>Additional comments</h2></div>
 <div class="card-body">
-<label class="attach-box" id="attachBox">
-<input type="file" id="attachInput" multiple accept="image/*,.pdf,.doc,.docx">
-<span id="attachLabel">Tap to add a photo or document</span>
+<div class="field">
+<label for="remarks">Remarks</label>
+<textarea id="remarks" rows="3" placeholder="Optional overall remarks"></textarea>
+</div>
+<label class="attach-box" id="attachBox" style="margin-top:6px;">
+<input type="file" id="attachInput" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,video/*,audio/*">
+<span id="attachLabel">Tap to add a photo, document, or other file (max 4, 1GB each)</span>
 </label>
 <div class="attach-list" id="attachList"></div>
 </div>
@@ -306,36 +286,153 @@ const BUCKET = 'grh-attachments';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const MEASURES = [
-{ id: 'm1', text: 'Are the latest versions of the approved Manuals being used?' },
-{ id: 'm2', text: 'Are the employees who provide services trained to provide such services?' },
-{ id: 'm3', text: 'Third measure for this section — pending confirmation from the source form.', pending: true },
+// ---- All known sections from the source form ----
+const SECTIONS = [
+{
+title: '1. Organization and management',
+ref: 'Ramp Handling Manual — Section 1',
+points: 3,
+measures: [
+{ text: 'Are the latest versions of the approved Manuals being used?' },
+{ text: 'Are the employees who provide services trained to provide such services?' },
+{ text: 'Third measure for this section — pending confirmation from the source form.', pending: true },
+],
+},
+{
+title: '3. Ramp handling equipment',
+ref: 'Ramp Handling Manual — Section 4',
+points: 8,
+measures: [
+{ text: 'Are local ramp driving regulations adhering to?' },
+{ text: 'Are Ground Supports Equipment operated by trained/licensed personnel in accordance with the Ramp Handling Manual or manufacturers procedures?' },
+{ text: 'Are Ground Supports Equipment maintained in a serviceable condition?' },
+{ text: 'Are unserviceable Ground Support Equipment clearly marked or removed to prevent use?' },
+{ text: 'Is Ground Support Equipment maintenance performed proactively including record keeping?' },
+{ text: 'Are the correct types of Ground Support Equipment used for the applicable function to be performed?' },
+{ text: 'Is the GPU and ASU checked and tested regularly?' },
+{ text: 'Are the tow bars and shear pins inspected regularly?' },
+],
+},
+{
+title: '4. Ground handling procedures',
+ref: 'Ramp Handling Manual — Section 5',
+points: 9,
+measures: [
+{ text: 'Are Ramp Handing processes known, understood, and supervised by a responsible person?' },
+{ text: 'Are safety cones used as per SAA instruction in the Ramp Handling Manual?' },
+{ text: 'Is an arrival damage inspection performed and recorded?' },
+{ text: 'Are refueling procedures followed including actions in the event of spillage, fire and emergency shut off location?' },
+{ text: 'Is a pre-departure damage inspection conducted and recorded?' },
+{ text: 'Are cabin and cargo doors operated as per procedures in the Ramp Handling Manual?' },
+{ text: 'Are the aircraft secured in event of night stops to prevent unauthorized access?' },
+{ text: 'Are Ground Safety incident forms available and used for reporting purposes?' },
+{ text: 'De-icing procedures where applicable local station procedures to apply.' },
+],
+},
+{
+title: '5. Cargo and baggage procedures',
+ref: 'Ramp Handling Manual — Section 6',
+points: 5,
+measures: [
+{ text: 'Are Dangerous Goods handling procedures including damages, spillage, prohibited known and adhere to in the event of loading / offloading?' },
+{ text: 'Are Dangerous Goods manuals available, understood and used when required?' },
+{ text: 'Are reporting procedures for Dangerous Goods incidents/accidents followed as per Ramp Handling Manual and local requirements?' },
+{ text: 'Are Dangerous Goods procedures followed when loading including limitations, markings, documentation and inspection for damages?' },
+{ text: 'Are Baggage handling, loading /offloading procedures known and adhered to including, segregation, labeling, reconciliation and mishandling?' },
+],
+},
+{
+title: '6. Load control and aircraft documentation',
+ref: 'Ramp Handling Manual — Section 7',
+points: 5,
+measures: [
+{ text: 'Are Load Control processes known and available?' },
+{ text: 'Are Load Controllers/TRC/Loading Supervisors trained, licensed and current for the aircraft types being operated?' },
+{ text: 'Is the required load control documentation kept on file, and retained for a minimum of 3 months?' },
+{ text: 'Are manual forms/procedures known and available in the event of system failure in line with the centralized load control SOP?' },
+{ text: 'Is LIR signed by both TRC and Loading Supervisor?' },
+],
+},
+{
+title: '7. Ramp safety',
+ref: 'Ramp Handling Manual — Section 8',
+points: 3,
+measures: [
+{ text: 'Are procedures for reporting of Hazards, Occurrences, Incidents or Accidents known by all airside operators and actioned when needed?' },
+{ text: 'Are Local Emergency Response and Evacuation procedures known and displayed in all operational areas?' },
+{ text: 'Has the SAA LERAP plan being shared and discussed with the relevant parties involved at local level?' },
+],
+},
+{
+title: '8. Check-in procedures',
+ref: 'Customer Service Manual — Section 1',
+points: 4,
+measures: [
+{ text: 'Are check-in agents trained on DGR, HF and SMS?' },
+{ text: 'Are check in agents asking security and dangerous goods questions?' },
+{ text: 'Are check-in agents verifying cabin baggage restrictions?' },
+{ text: 'Are check in agents asking customers to remove valuables and lithium-ion batteries in accordance with DGR/CSM?' },
+],
+},
+{
+title: '9. Safety management system',
+ref: null,
+points: 4,
+measures: [
+{ text: 'Does the GHSP have Safety policy and Objectives?' },
+{ text: 'Does the GHSP conduct safety awareness programs to promote safety?' },
+{ text: 'Does the GHSP have safety risk assessment programs?' },
+{ text: 'Are safety performance indicators (SPI) and targets (SPT) in place and monitored by the GHSP?' },
+],
+},
 ];
 
-const measuresContainer = document.getElementById('measuresContainer');
-MEASURES.forEach((m, i) => {
+const sectionsContainer = document.getElementById('sectionsContainer');
+SECTIONS.forEach((section, sIdx) => {
+const card = document.createElement('div');
+card.className = 'card';
+const refLine = section.ref ? `<div class="ref">Ref: ${section.ref}</div>` : '';
+card.innerHTML = `
+<div class="card-head">
+<span class="section-points">${section.points} points</span>
+<h2>${section.title}</h2>
+${refLine}
+</div>
+<div class="card-body">
+<div id="measures-${sIdx}"></div>
+<div class="field" style="margin-top:18px;">
+<label for="notes-${sIdx}">Notes</label>
+<textarea id="notes-${sIdx}" rows="3" placeholder="Optional notes for this section"></textarea>
+</div>
+</div>
+`;
+sectionsContainer.appendChild(card);
+
+const measuresContainer = card.querySelector(`#measures-${sIdx}`);
+section.measures.forEach((m, mIdx) => {
+const id = `s${sIdx}-m${mIdx}`;
 const div = document.createElement('div');
 div.className = 'measure';
 div.innerHTML = `
-<p><span class="idx">${i + 1}.</span>${m.text}</p>
+<p><span class="idx">${mIdx + 1}.</span>${m.text}</p>
 ${m.pending ? '<span class="pending-note">Placeholder text — replace once the full form is confirmed.</span>' : ''}
 <div class="compliance-toggle">
-<input type="radio" name="${m.id}" id="${m.id}-ok" value="compliant" required>
-<label class="ok" for="${m.id}-ok">Compliance</label>
-<input type="radio" name="${m.id}" id="${m.id}-bad" value="non_compliant">
-<label class="bad" for="${m.id}-bad">Non-Compliance</label>
+<input type="radio" name="${id}" id="${id}-ok" value="compliant" required>
+<label class="ok" for="${id}-ok">Compliance</label>
+<input type="radio" name="${id}" id="${id}-bad" value="non_compliant">
+<label class="bad" for="${id}-bad">Non-Compliance</label>
 </div>
-<div class="corrective-action" id="${m.id}-corrective" style="display:none;">
-<label for="${m.id}-corrective-text">Corrective action</label>
-<textarea id="${m.id}-corrective-text" rows="2" placeholder="What corrective action is being taken?"></textarea>
+<div class="corrective-action" id="${id}-corrective" style="display:none;">
+<label for="${id}-corrective-text">Corrective action</label>
+<textarea id="${id}-corrective-text" rows="2" placeholder="What corrective action is being taken?"></textarea>
 </div>
 `;
 measuresContainer.appendChild(div);
 
-div.querySelectorAll(`input[name="${m.id}"]`).forEach(input => {
+div.querySelectorAll(`input[name="${id}"]`).forEach(input => {
 input.addEventListener('change', () => {
-const correctiveBox = div.querySelector(`#${m.id}-corrective`);
-const textarea = div.querySelector(`#${m.id}-corrective-text`);
+const correctiveBox = div.querySelector(`#${id}-corrective`);
+const textarea = div.querySelector(`#${id}-corrective-text`);
 if (input.checked && input.value === 'non_compliant') {
 correctiveBox.style.display = 'block';
 textarea.setAttribute('required', 'required');
@@ -344,6 +441,7 @@ correctiveBox.style.display = 'none';
 textarea.removeAttribute('required');
 textarea.value = '';
 }
+});
 });
 });
 });
@@ -426,7 +524,7 @@ await loadBranding();
 await loadRecent();
 }
 
-// ---- Branding (logo) ----
+// ---- Branding (logo — read only, already set) ----
 async function loadBranding() {
 try {
 const { data, error } = await sb.from('grh_checklist_branding').select('logo_url').eq('id', 1).maybeSingle();
@@ -436,30 +534,11 @@ document.getElementById('logoSlot').innerHTML = `<img src="${data.logo_url}" alt
 } catch (e) { /* no branding set yet */ }
 }
 
-document.getElementById('logoUploadBtn').addEventListener('click', () => {
-document.getElementById('logoFileInput').click();
-});
-document.getElementById('logoFileInput').addEventListener('change', async (e) => {
-const file = e.target.files[0];
-if (!file) return;
-try {
-const path = `logo/${Date.now()}-${file.name}`;
-const { error: upErr } = await sb.storage.from(BUCKET).upload(path, file, { upsert: true });
-if (upErr) throw upErr;
-const { data: pub } = sb.storage.from(BUCKET).getPublicUrl(path);
-await sb.from('grh_checklist_branding').upsert({ id: 1, logo_url: pub.publicUrl, updated_at: new Date().toISOString() });
-document.getElementById('logoSlot').innerHTML = `<img src="${pub.publicUrl}" alt="SAA logo">`;
-} catch (err) {
-console.error('Logo upload failed', err);
-alert('Logo upload failed — check the browser console for details.');
-}
-});
-
 // ---- Attachments ----
 const attachInput = document.getElementById('attachInput');
 const attachList = document.getElementById('attachList');
 attachInput.addEventListener('change', () => {
-pendingFiles = pendingFiles.concat(Array.from(attachInput.files));
+pendingFiles = pendingFiles.concat(Array.from(attachInput.files)).slice(0, 4);
 renderAttachList();
 attachInput.value = '';
 });
@@ -492,12 +571,22 @@ submitBtn.disabled = true;
 statusMsg.textContent = 'Submitting…';
 statusMsg.className = 'status-msg';
 
-const items = MEASURES.map(m => {
-const compliance = form.querySelector(`input[name="${m.id}"]:checked`)?.value || null;
+const sectionsPayload = SECTIONS.map((section, sIdx) => {
+const items = section.measures.map((m, mIdx) => {
+const id = `s${sIdx}-m${mIdx}`;
+const compliance = form.querySelector(`input[name="${id}"]:checked`)?.value || null;
 const correctiveAction = compliance === 'non_compliant'
-? (document.getElementById(`${m.id}-corrective-text`)?.value || '')
+? (document.getElementById(`${id}-corrective-text`)?.value || '')
 : null;
 return { text: m.text, compliance, correctiveAction };
+});
+return {
+title: section.title,
+ref: section.ref,
+points: section.points,
+items,
+notes: document.getElementById(`notes-${sIdx}`).value || null,
+};
 });
 
 try {
@@ -514,10 +603,8 @@ const { error: insErr } = await sb.from('grh_checklist_submissions').insert({
 auditor_name: document.getElementById('auditorName').value,
 station: document.getElementById('station').value,
 date_captured: document.getElementById('dateCaptured').value,
-section_name: 'Organization and Management',
-manual_ref: 'Ramp Handling Manual — Section 1',
-items,
-notes: document.getElementById('sectionNotes').value || null,
+sections: sectionsPayload,
+remarks: document.getElementById('remarks').value || null,
 attachments: uploadedAttachments,
 });
 if (insErr) throw insErr;
@@ -527,6 +614,7 @@ statusMsg.className = 'status-msg ok';
 form.reset();
 pendingFiles = [];
 renderAttachList();
+document.querySelectorAll('.corrective-action').forEach(el => el.style.display = 'none');
 loadRecent();
 } catch (err) {
 console.error(err);
@@ -553,9 +641,14 @@ return;
 }
 container.innerHTML = '';
 data.forEach(d => {
-const items = d.items || [];
-const compliant = items.filter(i => i.compliance === 'compliant').length;
-const total = items.length;
+const sections = d.sections || (d.items ? [{ items: d.items }] : []);
+let compliant = 0, total = 0;
+sections.forEach(s => {
+(s.items || []).forEach(i => {
+total += 1;
+if (i.compliance === 'compliant') compliant += 1;
+});
+});
 const date = d.date_captured || (d.created_at ? d.created_at.slice(0, 10) : '—');
 const attachCount = (d.attachments || []).length;
 const row = document.createElement('div');
@@ -566,7 +659,7 @@ row.innerHTML = `
 <span>${escapeHtml(d.station || '—')} · ${escapeHtml(d.auditor_name || '—')}</span>
 <span class="score" style="color:${scoreColor}">${compliant}/${total}</span>
 </div>
-<div class="sub">${escapeHtml(d.section_name || '')} · ${date}${attachCount ? ' · 📎 ' + attachCount : ''}</div>
+<div class="sub">${sections.length} section${sections.length === 1 ? '' : 's'} · ${date}${attachCount ? ' · 📎 ' + attachCount : ''}</div>
 `;
 container.appendChild(row);
 });
@@ -584,4 +677,3 @@ return div.innerHTML;
 </script>
 </body>
 </html>
-
