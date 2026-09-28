@@ -9,8 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="icon" href="https://fokealhvpgnjubfhknix.supabase.co/storage/v1/object/public/grh-attachments/logo/1789636504076-saa_tail_logo.png">
-<link rel="apple-touch-icon" href="https://fokealhvpgnjubfhknix.supabase.co/storage/v1/object/public/grh-attachments/logo/1789636504076-saa_tail_logo.png">
 <style>
 :root {
 --navy: #0B1F3A;
@@ -84,7 +82,12 @@ width: 100%; padding: 9px 10px; font-size: 14.5px;
 border: 1px solid var(--line); border-radius: var(--radius);
 background: var(--bg); color: var(--ink); font-family: inherit;
 }
-.field input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.field select, .field input#stationOther {
+width: 100%; padding: 9px 10px; font-size: 14.5px;
+border: 1px solid var(--line); border-radius: var(--radius);
+background: var(--bg); color: var(--ink); font-family: inherit;
+}
+.field select:focus, .field input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
 .field textarea {
 width: 100%; padding: 9px 10px; font-size: 14px;
 border: 1px solid var(--line); border-radius: var(--radius);
@@ -242,7 +245,30 @@ cursor: pointer; margin-top: 6px;
 </div>
 <div class="field">
 <label for="station">Station</label>
-<input type="text" id="station" required autocomplete="off">
+<select id="station" required>
+<option value="" disabled selected>Select a station</option>
+<option value="ABJ">ABJ</option>
+<option value="ACC">ACC</option>
+<option value="CPT">CPT</option>
+<option value="DAR">DAR</option>
+<option value="DUR">DUR</option>
+<option value="FBM">FBM</option>
+<option value="FIH">FIH</option>
+<option value="GBE">GBE</option>
+<option value="GRU">GRU</option>
+<option value="HLA">HLA</option>
+<option value="HRE">HRE</option>
+<option value="JNB">JNB</option>
+<option value="LOS">LOS</option>
+<option value="LUN">LUN</option>
+<option value="MRU">MRU</option>
+<option value="PER">PER</option>
+<option value="PLZ">PLZ</option>
+<option value="VFA">VFA</option>
+<option value="WDH">WDH</option>
+<option value="__other">Other</option>
+</select>
+<input type="text" id="stationOther" placeholder="Enter station code or name" autocomplete="off" style="display:none; margin-top:8px;">
 </div>
 <div class="field">
 <label for="dateCaptured">Date of capturing</label>
@@ -449,6 +475,16 @@ textarea.value = '';
 
 let pendingFiles = [];
 
+// ---- Station dropdown: "Other" reveals a text box ----
+const stationSelect = document.getElementById('station');
+const stationOther = document.getElementById('stationOther');
+stationSelect.addEventListener('change', () => {
+const isOther = stationSelect.value === '__other';
+stationOther.style.display = isOther ? 'block' : 'none';
+stationOther.required = isOther;
+if (!isOther) stationOther.value = '';
+});
+
 // ---- Auth gate ----
 const authScreen = document.getElementById('authScreen');
 const deniedScreen = document.getElementById('deniedScreen');
@@ -602,7 +638,9 @@ uploadedAttachments.push({ name: file.name, url: pub.publicUrl });
 
 const { error: insErr } = await sb.from('grh_checklist_submissions').insert({
 auditor_name: document.getElementById('auditorName').value,
-station: document.getElementById('station').value,
+station: stationSelect.value === '__other'
+? stationOther.value.trim()
+: stationSelect.value,
 date_captured: document.getElementById('dateCaptured').value,
 sections: sectionsPayload,
 remarks: document.getElementById('remarks').value || null,
@@ -616,6 +654,8 @@ form.reset();
 pendingFiles = [];
 renderAttachList();
 document.querySelectorAll('.corrective-action').forEach(el => el.style.display = 'none');
+stationOther.style.display = 'none';
+stationOther.required = false;
 loadRecent();
 } catch (err) {
 console.error(err);
@@ -678,3 +718,4 @@ return div.innerHTML;
 </script>
 </body>
 </html>
+
