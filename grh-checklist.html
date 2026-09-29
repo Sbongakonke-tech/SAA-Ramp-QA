@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GRH Monthly Monitoring Checklist</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="grh-report.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
@@ -786,6 +789,12 @@ row.innerHTML = `
 </div>
 <div class="sub">${sections.length} section${sections.length === 1 ? '' : 's'} · ${date}${attachCount ? ' · 📎 ' + attachCount : ''}</div>
 `;
+const exportBtn = document.createElement('button');
+exportBtn.type = 'button';
+exportBtn.className = 'export-btn';
+exportBtn.textContent = 'Export PDF';
+exportBtn.addEventListener('click', () => exportSubmissionPDF(d, exportBtn));
+row.appendChild(exportBtn);
 container.appendChild(row);
 });
 } catch (e) {
@@ -802,4 +811,3 @@ return div.innerHTML;
 </script>
 </body>
 </html>
-
