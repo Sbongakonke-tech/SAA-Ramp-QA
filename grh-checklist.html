@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GRH Monthly Monitoring Checklist</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<script src="grh-report.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
@@ -192,8 +188,9 @@ cursor: pointer; margin-top: 6px;
 
 <div class="auth-screen" id="authScreen">
 <div class="auth-card">
-<h2>GRH Checklist — Sign in</h2>
-<p class="sub">This section is restricted to managers.</p>
+<h2 id="authTitle">GRH Checklist — Sign in</h2>
+<p class="sub" id="authSub">This section is restricted to managers.</p>
+
 <form id="loginForm">
 <div class="field">
 <label for="loginEmail">Email</label>
@@ -206,14 +203,36 @@ cursor: pointer; margin-top: 6px;
 <button type="submit" class="auth-btn" id="loginBtn">Sign in</button>
 <div class="status-msg" id="loginStatus"></div>
 </form>
+
+<form id="signupForm" style="display:none;">
+<div class="field">
+<label for="signupEmail">Email</label>
+<input type="email" id="signupEmail" required autocomplete="username">
+</div>
+<div class="field">
+<label for="signupPassword">Password</label>
+<input type="password" id="signupPassword" required autocomplete="new-password" minlength="6">
+</div>
+<div class="field">
+<label for="signupPassword2">Confirm password</label>
+<input type="password" id="signupPassword2" required autocomplete="new-password" minlength="6">
+</div>
+<button type="submit" class="auth-btn" id="signupBtn">Create account</button>
+<div class="status-msg" id="signupStatus"></div>
+</form>
+
+<p class="sub" style="margin:16px 0 0; text-align:center;">
+<a href="#" id="toSignup" style="color:var(--navy-2);">Need an account? Create one</a>
+<a href="#" id="toLogin" style="color:var(--navy-2); display:none;">Already have an account? Sign in</a>
+</p>
 </div>
 </div>
 
 <div class="auth-screen" id="deniedScreen" style="display:none;">
 <div class="auth-card denied-card">
 <div class="icon">🔒</div>
-<h2>Managers only</h2>
-<p class="sub">Your account (<span id="deniedEmail"></span>) doesn't have manager access to this section.</p>
+<h2>Pending approval</h2>
+<p class="sub">Your account (<span id="deniedEmail"></span>) hasn't been approved for manager access yet. Check back once it's been granted.</p>
 <button class="auth-btn" id="deniedSignOutBtn">Sign out</button>
 </div>
 </div>
@@ -554,6 +573,66 @@ await checkAccess();
 btn.disabled = false;
 });
 
+// ---- Sign in / sign up toggle ----
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+const authTitle = document.getElementById('authTitle');
+const authSub = document.getElementById('authSub');
+const toSignup = document.getElementById('toSignup');
+const toLogin = document.getElementById('toLogin');
+
+toSignup.addEventListener('click', (e) => {
+e.preventDefault();
+loginForm.style.display = 'none';
+signupForm.style.display = 'block';
+toSignup.style.display = 'none';
+toLogin.style.display = 'inline';
+authTitle.textContent = 'GRH Checklist — Create account';
+authSub.textContent = 'An administrator will need to approve your account before you can use this section.';
+});
+toLogin.addEventListener('click', (e) => {
+e.preventDefault();
+signupForm.style.display = 'none';
+loginForm.style.display = 'block';
+toLogin.style.display = 'none';
+toSignup.style.display = 'inline';
+authTitle.textContent = 'GRH Checklist — Sign in';
+authSub.textContent = 'This section is restricted to managers.';
+});
+
+signupForm.addEventListener('submit', async (e) => {
+e.preventDefault();
+const btn = document.getElementById('signupBtn');
+const status = document.getElementById('signupStatus');
+const email = document.getElementById('signupEmail').value;
+const pw = document.getElementById('signupPassword').value;
+const pw2 = document.getElementById('signupPassword2').value;
+
+if (pw !== pw2) {
+status.textContent = 'Passwords do not match.';
+status.className = 'status-msg err';
+return;
+}
+
+btn.disabled = true;
+status.textContent = 'Creating account…';
+status.className = 'status-msg';
+
+const { error } = await sb.auth.signUp({ email, password: pw });
+
+if (error) {
+status.textContent = error.message || 'Could not create account.';
+status.className = 'status-msg err';
+btn.disabled = false;
+return;
+}
+
+status.textContent = 'Check your email to confirm your account. An administrator will then need to approve access.';
+status.className = 'status-msg ok';
+signupForm.reset();
+btn.disabled = false;
+});
+
 async function signOut() {
 await sb.auth.signOut();
 showAuthScreen();
@@ -707,12 +786,6 @@ row.innerHTML = `
 </div>
 <div class="sub">${sections.length} section${sections.length === 1 ? '' : 's'} · ${date}${attachCount ? ' · 📎 ' + attachCount : ''}</div>
 `;
-const exportBtn = document.createElement('button');
-exportBtn.type = 'button';
-exportBtn.className = 'export-btn';
-exportBtn.textContent = 'Export PDF';
-exportBtn.addEventListener('click', () => exportSubmissionPDF(d, exportBtn));
-row.appendChild(exportBtn);
 container.appendChild(row);
 });
 } catch (e) {
