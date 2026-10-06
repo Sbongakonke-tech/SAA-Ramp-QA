@@ -327,8 +327,40 @@ cursor: pointer; margin-top: 6px;
 </div>
 </form>
 
-<div class="log-head"><h3>Recent submissions</h3></div>
-<div id="logContainer"><div class="log-empty">Loading…</div></div>
+<div class="card" style="margin-top:20px;">
+<div class="card-head">
+<h2>Submission history</h2>
+<div class="ref">Browse all audits by station</div>
+</div>
+<div class="card-body">
+<div class="field" style="margin:0 0 4px;">
+<label for="historyStationFilter">Station</label>
+<select id="historyStationFilter">
+<option value="all">All stations (last 10)</option>
+<option value="ABJ">ABJ</option>
+<option value="ACC">ACC</option>
+<option value="CPT">CPT</option>
+<option value="DAR">DAR</option>
+<option value="DUR">DUR</option>
+<option value="FBM">FBM</option>
+<option value="FIH">FIH</option>
+<option value="GBE">GBE</option>
+<option value="GRU">GRU</option>
+<option value="HLA">HLA</option>
+<option value="HRE">HRE</option>
+<option value="JNB">JNB</option>
+<option value="LOS">LOS</option>
+<option value="LUN">LUN</option>
+<option value="MRU">MRU</option>
+<option value="PER">PER</option>
+<option value="PLZ">PLZ</option>
+<option value="VFA">VFA</option>
+<option value="WDH">WDH</option>
+</select>
+</div>
+</div>
+</div>
+<div id="logContainer" style="margin-top:4px;"><div class="log-empty">Loading…</div></div>
 
 </div>
 
@@ -753,22 +785,46 @@ submitBtn.disabled = false;
 }
 });
 
-// ---- Recent submissions ----
-async function loadRecent() {
+// ---- Submission history (filterable by station) ----
+const historyStationFilter = document.getElementById('historyStationFilter');
+historyStationFilter.addEventListener('change', () => loadRecent(historyStationFilter.value));
+
+function monthLabel(d) {
+const raw = d.date_captured || d.created_at;
+if (!raw) return 'Undated';
+const dt = new Date(raw);
+return dt.toLocaleDateString('en-ZA', { month: 'long', year: 'numeric' });
+}
+
+async function loadRecent(station) {
+station = station || 'all';
 const container = document.getElementById('logContainer');
+container.innerHTML = '<div class="log-empty">Loading…</div>';
 try {
-const { data, error } = await sb
-.from('grh_checklist_submissions')
-.select('*')
-.order('created_at', { ascending: false })
-.limit(10);
+let query = sb.from('grh_checklist_submissions').select('*').order('created_at', { ascending: false });
+query = station === 'all' ? query.limit(10) : query.eq('station', station).limit(300);
+const { data, error } = await query;
 if (error) throw error;
 if (!data || data.length === 0) {
-container.innerHTML = '<div class="log-empty">No submissions yet.</div>';
+container.innerHTML = station === 'all'
+? '<div class="log-empty">No submissions yet.</div>'
+: `<div class="log-empty">No submissions yet for ${escapeHtml(station)}.</div>`;
 return;
 }
 container.innerHTML = '';
+let currentMonth = null;
 data.forEach(d => {
+if (station !== 'all') {
+const m = monthLabel(d);
+if (m !== currentMonth) {
+currentMonth = m;
+const heading = document.createElement('div');
+heading.className = 'log-head';
+heading.style.marginTop = '18px';
+heading.innerHTML = `<h3>${escapeHtml(m)}</h3>`;
+container.appendChild(heading);
+}
+}
 const sections = d.sections || (d.items ? [{ items: d.items }] : []);
 let compliant = 0, total = 0;
 sections.forEach(s => {
