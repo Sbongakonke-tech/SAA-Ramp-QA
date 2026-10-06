@@ -293,18 +293,47 @@ doc.link(h.cell.x, h.cell.y, h.cell.width, h.cell.height, { url: atts[h.row.inde
 y = doc.lastAutoTable.finalY + 9;
 }
 
-// ---- Sign-off ----
-if (y > 250) { doc.addPage(); y = TOP; }
-y += 8;
-doc.setDrawColor(...DIM);
-doc.setLineWidth(0.3);
-doc.line(M, y, M + 80, y);
-doc.line(PAGE_W - M - 80, y, PAGE_W - M, y);
-doc.setFont('helvetica', 'normal');
+// ---- Signatures ----
+if (y > 225) { doc.addPage(); y = TOP; }
+y += 10;
+label(doc, 'SIGN-OFF', y);
+y += 6;
+
+const sigW = 80, sigH = 22;
+const leftX = M, rightX = PAGE_W - M - sigW;
+
+function drawSignatureBlock(x, roleLabel, name, dataUrl, when) {
+doc.setDrawColor(...LINE);
+doc.setFillColor(...LIGHT);
+doc.rect(x, y, sigW, sigH, 'FD');
+if (dataUrl) {
+try {
+const pad = 2;
+doc.addImage(dataUrl, 'PNG', x + pad, y + pad, sigW - pad * 2, sigH - pad * 2, undefined, 'FAST');
+} catch (e) { /* image failed to decode, leave box blank */ }
+} else {
+doc.setFont('helvetica', 'italic');
 doc.setFontSize(8);
 doc.setTextColor(...DIM);
-doc.text('Auditor signature and date', M, y + 4.5);
-doc.text('Manager review signature and date', PAGE_W - M - 80, y + 4.5);
+doc.text('Not yet signed', x + sigW / 2, y + sigH / 2 + 1.5, { align: 'center' });
+}
+doc.setDrawColor(...DIM);
+doc.setLineWidth(0.3);
+doc.line(x, y + sigH + 2, x + sigW, y + sigH + 2);
+doc.setFont('helvetica', 'bold');
+doc.setFontSize(8);
+doc.setTextColor(...INK);
+doc.text(roleLabel, x, y + sigH + 6.5);
+doc.setFont('helvetica', 'normal');
+doc.setFontSize(7.5);
+doc.setTextColor(...DIM);
+const who = name ? name : '';
+const whenStr = when ? fmtDate(when) : '';
+doc.text([who, whenStr].filter(Boolean).join(' | ') || ' ', x, y + sigH + 10.5);
+}
+
+drawSignatureBlock(leftX, 'Station manager endorsement (prior to submission)', d.station_manager_name, d.station_manager_signature, d.station_manager_endorsed_at);
+drawSignatureBlock(rightX, 'Auditor sign-off (verification)', d.auditor_signoff_name, d.auditor_signoff_signature, d.auditor_signoff_at);
 
 // ---- Running header (pages 2+) and footer (all pages) ----
 const n = doc.getNumberOfPages();
@@ -400,3 +429,4 @@ s.textContent =
 document.head.appendChild(s);
 }
 })();
+
