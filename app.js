@@ -14,7 +14,32 @@ function getAuthHeaders() {
     'apikey': SUPABASE_KEY,
     'Authorization': `Bearer ${token}`
   };
+} 
+
+async function refreshSession() {
+const session = JSON.parse(localStorage.getItem('saa_session') || '{}');
+if (!session.refresh_token) return false;
+try {
+const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+body: JSON.stringify({ refresh_token: session.refresh_token })
+});
+const data = await res.json();
+if (data.access_token) {
+localStorage.setItem('saa_session', JSON.stringify({
+access_token: data.access_token,
+refresh_token: data.refresh_token,
+user: data.user || session.user
+}));
+return true;
 }
+} catch (e) {
+console.error('Session refresh failed:', e);
+}
+return false;
+}
+
 
 async function signIn() {
   const email = document.getElementById('signinEmail').value.trim();
@@ -45,6 +70,7 @@ async function signIn() {
       currentUser = data.user;
       localStorage.setItem('saa_session', JSON.stringify({
         access_token: data.access_token,
+        refresh_token: data.refresh_token,
         user: data.user
       }));
 
@@ -306,10 +332,13 @@ completed_offloading: getTime('completedOffloading'),
 
     // Additional
     comments_general: document.getElementById('commentsGeneral').value,
-    comments_passengers: document.getElementById('commentsPassengers').value,
-    comments_airchefs: document.getElementById('commentsAirchefs').value,
-    comments_grooming: document.getElementById('commentsGrooming').value,
+    comments_inbound: document.getElementById('commentsInbound').value,
     comments_baggage: document.getElementById('commentsBaggage').value,
+    comments_buses: document.getElementById('commentsBuses').value,
+    comments_passengers: document.getElementById('commentsPassengers').value,
+    comments_grooming: document.getElementById('commentsGrooming').value,
+    comments_airchefs: document.getElementById('commentsAirchefs').value,
+   
 
     photo_url: capturedPhotoUrl,
 latitude: capturedLatitude,
@@ -1031,6 +1060,9 @@ function renderRecentSubmissions(submissions) {
 // ── INIT HOME ─────────────────────────────────────────
 updateClock();
 setInterval(updateClock, 1000);
+refreshSession();
+setInterval(refreshSession, 45 * 60 * 1000);
+
 
 // Check if already signed in
 if (checkSession()) {
@@ -1228,7 +1260,6 @@ function getCurrentFormSections() {
       { id: 'passengers', label: 'Inbound Flight Passengers', field: 'arrivalStaffOnBay' },
       { id: 'grooming', label: 'Grooming', field: 'groomingOn' },
       { id: 'airchefs', label: 'Airchefs', field: 'startOffloading' },
-      { id: 'additional', label: 'Additional Information', field: 'commentsGeneral' },
     ],
     departure: [
       { id: 'dep-departure', label: 'Departure', field: 'dep_flightNumber' },

@@ -848,4 +848,10 @@ body {
   color: var(--green);
   margin-left: 30px;
   margin-top: 2px;
+} 
+/* ── SECTION COMMENTS ───────────────────────────────── */
+.section-comment {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
 }

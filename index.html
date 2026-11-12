@@ -142,6 +142,7 @@
             </select>
           </div>
           <div class="field"><label>Number of Safety Cones</label><input type="number" id="numberOfCones" placeholder="0"></div>
+          <div class="field section-comment"><label>Comments</label><textarea id="commentsGeneral" rows="2" placeholder="Add a comment for this section..."></textarea></div>
         </div>
       </div>
 
@@ -183,9 +184,10 @@
 </div>
 
           <div class="field"><label>Signature</label><input type="text" id="inboundSignature" placeholder="Full name"></div>
-        </div>
+          <div class="field section-comment"><label>Comments</label><textarea id="commentsInbound" rows="2" placeholder="Add a comment for this section..."></textarea></div>
       </div>
-
+      </div>
+      
       <!-- SECTION 3: BAGGAGE -->
       <div class="section">
         <div class="section-header" onclick="toggleSection('baggage')">
@@ -246,6 +248,7 @@
             </select>
           </div>
           <div class="field"><label>Flight Supervisor Signature</label><input type="text" id="flightSupSignature" placeholder="Full name"></div>
+          <div class="field section-comment"><label>Comments</label><textarea id="commentsBaggage" rows="2" placeholder="Add a comment for this section..."></textarea></div>
         </div>
       </div>
 
@@ -258,6 +261,8 @@
         <div class="section-body hidden" id="body-buses">
           <div class="field"><label>Bus Number</label><input type="text" id="busNumber" placeholder="Bus #"></div>
           <div class="field"><label>Bus Time</label><input type="time" id="busTime"></div>
+          <div class="field section-comment"><label>Comments</label><textarea id="commentsBuses" rows="2" placeholder="Add a comment for this section..."></textarea></div>
+          <div class="field"><label>Bus Driver Name</label><input type="text" id="busDriverName" placeholder="Name"></div>
         </div>
       </div>
 
@@ -288,7 +293,8 @@
   <label>PAU Depart</label>
   <button class="timestamp-btn" id="btn_pauDepart" onclick="captureTime('pauDepart', 'btn_pauDepart')">Tap to capture time</button>
 </div>
-        </div>
+          <div class="field section-comment"><label>Comments</label><textarea id="commentsPassengers" rows="2" placeholder="Add a comment for this section..."></textarea></div>
+      </div>
       </div>
 
       <!-- SECTION 6: GROOMING -->
@@ -325,6 +331,7 @@
               <option value="">Select</option>
               <option>Yes</option><option>No</option>
             </select>
+            <div class="field section-comment"><label>Comments</label><textarea id="commentsGrooming" rows="2" placeholder="Add a comment for this section..."></textarea></div>
           </div>
         </div>
       </div>
@@ -349,25 +356,11 @@
               <option value="">Select</option>
               <option>Yes</option><option>No</option>
             </select>
+            <div class="field section-comment"><label>Comments</label><textarea id="commentsAirchefs" rows="2" placeholder="Add a comment for this section..."></textarea></div>
           </div>
         </div>
       </div>
-
-      <!-- SECTION 8: ADDITIONAL INFORMATION -->
-      <div class="section">
-        <div class="section-header" onclick="toggleSection('additional')">
-          <span>Additional Information</span>
-          <span class="chevron" id="chevron-additional">▼</span>
-        </div>
-        <div class="section-body hidden" id="body-additional">
-          <div class="field"><label>General Comments</label><textarea id="commentsGeneral" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Passengers</label><textarea id="commentsPassengers" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Airchefs</label><textarea id="commentsAirchefs" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Grooming</label><textarea id="commentsGrooming" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Baggage</label><textarea id="commentsBaggage" rows="3" placeholder="Enter comments..."></textarea></div>
-        </div>
-      </div>
-
+  
       <!-- SUBMIT BUTTON -->
       <div class="submit-wrap">
         <button class="submit-btn" onclick="submitForm()">Submit Form</button>
