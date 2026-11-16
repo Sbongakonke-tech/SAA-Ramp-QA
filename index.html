@@ -778,6 +778,7 @@
             </select>
           </div>
           <div class="field"><label>Number of Safety Cones</label><input type="number" id="ta_numberOfCones" placeholder="0"></div>
+          <div class="field section-comment"><label>Comments</label><textarea id="ta_commentsGeneral" rows="2" placeholder="Add a comment for this section..."></textarea></div>
         </div>
       </div>
 
@@ -817,9 +818,10 @@
   <label class="check-item"><input type="checkbox" id="ta_check7" onchange="recordCheckTime('ta_check7', this)"> Check for visible A/C damage/leaks<span class="check-time" id="ta_check7_time"></span></label>
 </div>
           <div class="field"><label>Signature</label><input type="text" id="ta_arrivalSignature" placeholder="Full name"></div>
-        </div>
+          <div class="field section-comment"><label>Comments</label><textarea id="ta_commentsFlightdetails" rows="2" placeholder="Add a comment for this section..."></textarea></div>
       </div>
-
+      </div>
+      
       <!-- SECTION 3: ARRIVAL BAGGAGE -->
       <div class="section">
         <div class="section-header" onclick="toggleSection('ta-baggage')">
@@ -880,6 +882,7 @@
             </select>
           </div>
           <div class="field"><label>Flight Supervisor Signature</label><input type="text" id="ta_flightSupSignature" placeholder="Full name"></div>
+          <div class="field section-comment"><label>Comments</label><textarea id="ta_commentsBaggage" rows="2" placeholder="Add a comment for this section..."></textarea></div>
         </div>
       </div>
 
@@ -899,6 +902,7 @@
             </div>
           </div>
           <button class="add-tag-btn" onclick="addTaBusRow()">+ Add Bus</button>
+          <div class="field section-comment"><label>Comments</label><textarea id="ta_commentsBuses" rows="2" placeholder="Add a comment for this section..."></textarea></div>
         </div>
       </div>
 
@@ -929,22 +933,7 @@
   <label>PAU Depart</label>
   <button class="timestamp-btn" id="btn_ta_pauDepart" onclick="captureTime('ta_pauDepart', 'btn_ta_pauDepart')">Tap to capture time</button>
 </div>
-        </div>
-      </div>
-
-      <!-- SECTION 6: ADDITIONAL INFORMATION -->
-      <div class="section">
-        <div class="section-header" onclick="toggleSection('ta-additional')">
-          <span>Additional Information</span>
-          <span class="chevron" id="chevron-ta-additional">▼</span>
-        </div>
-        <div class="section-body hidden" id="body-ta-additional">
-          <div class="field"><label>General Comments</label><textarea id="ta_commentsGeneral" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Passengers</label><textarea id="ta_commentsPassengers" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Airchefs</label><textarea id="ta_commentsAirchefs" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Grooming</label><textarea id="ta_commentsGrooming" rows="3" placeholder="Enter comments..."></textarea></div>
-          <div class="field"><label>Baggage</label><textarea id="ta_commentsBaggage" rows="3" placeholder="Enter comments..."></textarea></div>
-        </div>
+          <div class="field section-comment"><label>Comments</label><textarea id="ta_commentsPassengers" rows="2" placeholder="Add a comment for this section..."></textarea></div>
       </div>
 
       <!-- SUBMIT -->

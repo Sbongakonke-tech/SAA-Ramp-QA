@@ -758,10 +758,12 @@ ta_check7_time: getCheckTime('ta_check7'),
 
     // Additional
     comments_general: document.getElementById('ta_commentsGeneral').value,
-    comments_passengers: document.getElementById('ta_commentsPassengers').value,
-    comments_airchefs: document.getElementById('ta_commentsAirchefs').value,
-    comments_grooming: document.getElementById('ta_commentsGrooming').value,
+    comments_flightdetails: document.getElementById('ta_commentsFlightdetails').value,
     comments_baggage: document.getElementById('ta_commentsBaggage').value,
+    comments_buses: document.getElementById('ta_commentsBuses').value,
+    comments_passengers: document.getElementById('ta_commentsPassengers').value,
+    
+   
 
     photo_url: capturedPhotoUrl,
 latitude: capturedLatitude,
@@ -1283,7 +1285,7 @@ function getCurrentFormSections() {
       { id: 'ta-baggage', label: 'Arrival Baggage', field: 'ta_baggageSupervisor' },
       { id: 'ta-buses', label: 'Buses', field: null },
       { id: 'ta-passengers', label: 'Arrival Flight Passengers', field: 'ta_arrivalStaffOnBay' },
-      { id: 'ta-additional', label: 'Additional Information', field: 'ta_commentsGeneral' },
+      
     ]
   };
 
