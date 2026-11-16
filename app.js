@@ -585,10 +585,14 @@ dep_check7_time: getCheckTime('dep_check7'),
 
     // Additional
     comments_general: document.getElementById('dep_commentsGeneral').value,
+    comments_flightdetails: document.getElementById('dep_commentsFlightDetails').value,
+    comments_fuelling: document.getElementById('dep_commentsFuelling').value,
+    comments_baggage: document.getElementById('dep_commentsBaggage').value,
+    comments_grooming: document.getElementById('dep_commentsGrooming').value,
     comments_passengers: document.getElementById('dep_commentsPassengers').value,
     comments_airchefs: document.getElementById('dep_commentsAirchefs').value,
-    comments_grooming: document.getElementById('dep_commentsGrooming').value,
-    comments_baggage: document.getElementById('dep_commentsBaggage').value,
+    comments_security: document.getElementById('dep_commentsSecurity').value,
+    comments_checks: document.getElementById('dep_commentsChecks').value,
     delay_comments: document.getElementById('dep_delayComments').value,
 
     photo_url: capturedPhotoUrl,
@@ -1270,8 +1274,8 @@ function getCurrentFormSections() {
       { id: 'dep-boarding', label: 'Boarding', field: 'dep_okToBoard' },
       { id: 'dep-airchefs', label: 'Airchefs', field: 'dep_startLoading' },
       { id: 'dep-security', label: 'Security Check', field: 'dep_securityStarted' },
-      { id: 'dep-checks', label: 'Departure Checks', field: 'dep_tugOnBay' },
-      { id: 'dep-additional', label: 'Additional Information', field: 'dep_commentsGeneral' },
+      { id: 'dep-checks', label: 'Departure Checks', field: 'dep_tugOnBay' }, 
+      
     ],
     turnaround: [
       { id: 'ta-header', label: 'Turnaround', field: 'ta_flightNumber' },
