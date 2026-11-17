@@ -40,6 +40,79 @@ console.error('Session refresh failed:', e);
 return false;
 }
 
+// ── TERMS OF USE ──────────────────────────────────────
+const TERMS_VERSION = 'v1';
+
+async function hasAcceptedTerms() {
+const session = JSON.parse(localStorage.getItem('saa_session') || '{}');
+if (!session.user) return false;
+try {
+const res = await fetch(
+`${SUPABASE_URL}/rest/v1/terms_acceptances?select=id&user_id=eq.${session.user.id}&terms_version=eq.${TERMS_VERSION}&limit=1`,
+{ headers: getAuthHeaders() }
+);
+if (res.status === 401) { signOut(); return null; }
+const rows = await res.json();
+return Array.isArray(rows) && rows.length > 0;
+} catch (e) {
+console.error('Terms check failed:', e);
+return false;
+}
+}
+
+async function enterApp() {
+const accepted = await hasAcceptedTerms();
+if (accepted === null) return;
+if (accepted) {
+document.getElementById('termsScreen').classList.add('hidden');
+document.getElementById('homeScreen').classList.remove('hidden');
+updateClock();
+loadTodayStats();
+} else {
+document.getElementById('homeScreen').classList.add('hidden');
+document.getElementById('termsScreen').classList.remove('hidden');
+}
+}
+
+async function acceptTerms() {
+const session = JSON.parse(localStorage.getItem('saa_session') || '{}');
+const btn = document.getElementById('termsContinueBtn');
+btn.textContent = 'Saving...';
+btn.disabled = true;
+
+try {
+const res = await fetch(`${SUPABASE_URL}/rest/v1/terms_acceptances`, {
+method: 'POST',
+headers: { ...getAuthHeaders(), 'Prefer': 'return=minimal' },
+body: JSON.stringify({
+user_id: session.user.id,
+user_email: session.user.email,
+terms_version: TERMS_VERSION
+})
+});
+
+if (res.status === 401) { signOut(); return; }
+
+if (res.ok) {
+document.getElementById('termsScreen').classList.add('hidden');
+document.getElementById('homeScreen').classList.remove('hidden');
+updateClock();
+loadTodayStats();
+} else {
+showToast('Could not save acceptance — try again');
+}
+} catch (e) {
+console.error(e);
+showToast('Network error — try again');
+} finally {
+btn.textContent = 'Accept and Continue';
+btn.disabled = !document.getElementById('termsCheckbox').checked;
+}
+}
+
+function declineTerms() {
+signOut();
+}
 
 async function signIn() {
   const email = document.getElementById('signinEmail').value.trim();
@@ -81,10 +154,8 @@ async function signIn() {
 
       // Navigate to home
       document.getElementById('signInScreen').classList.add('hidden');
-      document.getElementById('homeScreen').classList.remove('hidden');
-      updateClock();
-      loadTodayStats();
-      showToast(`Welcome ${formattedName}`);
+showToast(`Welcome ${formattedName}`);
+await enterApp();
 
     } else {
       showToast('Invalid email or password');
@@ -105,6 +176,9 @@ function signOut() {
   document.getElementById('signinEmail').value = '';
   document.getElementById('signinPassword').value = '';
   document.getElementById('homeScreen').classList.add('hidden');
+document.getElementById('termsScreen').classList.add('hidden');
+document.getElementById('termsCheckbox').checked = false;
+document.getElementById('termsContinueBtn').disabled = true;
   document.getElementById('signInScreen').classList.remove('hidden');
   showToast('Signed out successfully');
 }
@@ -1065,18 +1139,16 @@ function renderRecentSubmissions(submissions) {
 
 // ── INIT HOME ─────────────────────────────────────────
 updateClock();
-setInterval(updateClock, 1000);
-refreshSession();
+setInterval(updateClock, 1000); 
 setInterval(refreshSession, 45 * 60 * 1000);
 
 
 // Check if already signed in
 if (checkSession()) {
-  document.getElementById('signInScreen').classList.add('hidden');
-  document.getElementById('homeScreen').classList.remove('hidden');
-  loadTodayStats();
+document.getElementById('signInScreen').classList.add('hidden');
+refreshSession().then(() => enterApp());
 } else {
-  document.getElementById('signInScreen').classList.remove('hidden');
+document.getElementById('signInScreen').classList.remove('hidden');
 }
 // ── BOTTOM TOOLBAR ────────────────────────────────────
 

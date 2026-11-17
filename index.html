@@ -35,6 +35,82 @@
     </div>
   </div>
 </div>
+
+<!-- TERMS OF USE SCREEN -->
+<div id="termsScreen" class="screen hidden">
+<div class="terms-wrap">
+
+<div class="terms-header">
+<img src="./logo.png" class="terms-logo" alt="SAA">
+<div>
+<p class="terms-company">SOUTH AFRICAN AIRWAYS SOC LTD</p>
+<h1 class="terms-title">APPLICATION TERMS OF USE</h1>
+</div>
+</div>
+
+<div class="terms-scroll">
+
+<h3>1. Acceptance of Terms</h3>
+<p>By accessing, registering for, or using this application ("Application"), the user ("User") acknowledges that they have read, understood, and agreed to be bound by these Terms of Use and all applicable South African laws, regulations, policies, and procedures of South African Airways SOC Ltd ("SAA").</p>
+
+<h3>2. Authorised Use</h3>
+<p>The Application is provided exclusively for authorised business purposes. Access is restricted to duly authorised users and may not be used for any unlawful, unauthorised, fraudulent, or personal commercial purpose.</p>
+<p>The User shall use the Application only within the scope of their authorised duties and responsibilities.</p>
+
+<h3>3. Confidentiality</h3>
+<p>All information made available through the Application, including but not limited to operational, commercial, financial, employee, customer, supplier, and business information, is confidential and proprietary to SAA.</p>
+<p>The User shall not disclose, copy, reproduce, distribute, transmit, publish, or otherwise make available any information obtained through the Application except where expressly authorised by SAA or required by law.</p>
+
+<h3>4. POPIA Compliance</h3>
+<p>SAA processes personal information in accordance with the Protection of Personal Information Act, 2013 (Act No. 4 of 2013) ("POPIA").</p>
+<p>By using the Application, the User undertakes to:</p>
+<ul>
+<li>Process personal information lawfully and only for authorised business purposes;</li>
+<li>Maintain the confidentiality and security of personal information accessed through the Application;</li>
+<li>Comply with all applicable privacy, information security, records management, and data protection requirements;</li>
+<li>Immediately report any actual or suspected unauthorised access, disclosure, loss, or breach of personal information.</li>
+</ul>
+
+<h3>5. Intellectual Property and Non-Commercialisation</h3>
+<p>All software, source code, data, reports, dashboards, analytics, content, designs, trademarks, business processes, documentation, and other intellectual property contained within the Application remain the exclusive property of SAA.</p>
+<p>The User shall not:</p>
+<ul>
+<li>Sell, licence, commercialise, monetise, or otherwise exploit any part of the Application or its contents;</li>
+<li>Reverse engineer, decompile, replicate, modify, or create derivative works from the Application;</li>
+<li>Extract, redistribute, or use Application data for any purpose unrelated to authorised SAA business activities.</li>
+</ul>
+
+<h3>6. Monitoring and Audit</h3>
+<p>SAA reserves the right to monitor, record, retain, review, and audit all Application activity for security, compliance, operational, investigative, and governance purposes.</p>
+<p>The User acknowledges and consents to such monitoring as a condition of access to the Application.</p>
+
+<h3>7. Limitation of Liability</h3>
+<p>While SAA takes reasonable steps to ensure the accuracy, integrity, and availability of information contained within the Application, no warranty is provided regarding its completeness, accuracy, reliability, or uninterrupted availability.</p>
+<p>To the fullest extent permitted by law, SAA shall not be liable for any loss, damage, cost, or liability arising from the use of, reliance upon, or inability to access the Application.</p>
+
+<h3>8. Suspension and Termination</h3>
+<p>SAA reserves the right to suspend, restrict, or terminate access to the Application at any time where a User breaches these Terms of Use, applicable laws, SAA policies, or security requirements.</p>
+
+<h3>9. Governing Law</h3>
+<p>These Terms of Use shall be governed by and construed in accordance with the laws of the Republic of South Africa.</p>
+
+<h3>10. Acknowledgement</h3>
+<p>By accessing or using the Application, the User acknowledges that they have read, understood, and agreed to comply with these Terms of Use.</p>
+
+</div>
+
+<div class="terms-footer">
+<label class="terms-check">
+<input type="checkbox" id="termsCheckbox" onchange="document.getElementById('termsContinueBtn').disabled = !this.checked">
+<span>I have read, understood, and agree to the South African Airways Application Terms of Use, including the Privacy, Confidentiality, POPIA Compliance, Monitoring, and Non-Commercialisation provisions.</span>
+</label>
+<button class="submit-btn" id="termsContinueBtn" onclick="acceptTerms()" disabled>Accept and Continue</button>
+<button class="modal-close" onclick="declineTerms()">Decline and Sign Out</button>
+</div>
+
+</div>
+</div>
+
   <!-- HOME SCREEN -->
 <div id="homeScreen" class="screen hidden">
 
